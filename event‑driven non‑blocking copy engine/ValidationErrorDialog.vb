@@ -7,7 +7,7 @@ Public Class ValidationErrorDialog
     Private btnOK As Button
 
     Public Sub New(message As String)
-        Me.Text = "Copy"
+        Me.Text = "Copy Not Allowed"
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.StartPosition = FormStartPosition.CenterParent
         Me.MaximizeBox = False

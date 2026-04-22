@@ -65,6 +65,35 @@ Imports System.IO
 
 Public Class Form1
 
+    Private Shared ReadOnly ProtectedRoots As String() = {
+    "c:\windows",
+    "c:\windows\system32",
+    "c:\program files",
+    "c:\program files (x86)",
+    "c:\programdata",
+    "c:\system volume information",
+    "c:\$recycle.bin",
+    "c:\perflogs",
+    "c:\system.sav",
+    "c:\recovery",
+    "c:\documents and settings",
+    "c:\msocache",
+    "c:\$winreagent",
+    "c:\$windows.~bt",
+    "c:\$windows.~ws",
+    "c:\onedrivetemp",
+    "c:\dumpstack.log.tmp",' Kernel-locked system files
+    "c:\hiberfil.sys",
+    "c:\pagefile.sys",
+    "c:\swapfile.sys",
+    "c:\users\all users",' Legacy junctions (XP-era compatibility)
+    "c:\users\default user",
+    "c:\users\default\appdata\local\application data",
+    "c:\users\default\appdata\local\history",
+    "c:\users\default\appdata\local\temporary internet files"
+}
+
+
     Private Sub btnBrowseSource_Click(sender As Object, e As EventArgs) Handles btnBrowseSource.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
@@ -92,6 +121,109 @@ Public Class Form1
         End Using
     End Sub
 
+    'Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    '    Dim src As String = txtSource.Text.Trim()
+    '    Dim dst As String = txtDest.Text.Trim()
+
+    '    '===============================
+    '    ' VALIDATION
+    '    '===============================
+
+    '    ' 1. Must exist
+    '    If Not File.Exists(src) AndAlso Not Directory.Exists(src) Then
+    '        ShowValidationError("The source path does not exist.")
+    '        Return
+    '    End If
+
+    '    If Not Directory.Exists(dst) Then
+    '        ShowValidationError("The destination folder does not exist.")
+    '        Return
+    '    End If
+
+    '    ' 2. Cannot copy folder into itself or subfolder
+    '    If Directory.Exists(src) Then
+    '        Dim s = src.TrimEnd("\"c).ToLower()
+    '        Dim d = dst.TrimEnd("\"c).ToLower()
+
+    '        If d = s OrElse d.StartsWith(s & "\") Then
+    '            ShowValidationError("You cannot copy a folder into itself or one of its subfolders.")
+    '            Return
+    '        End If
+    '    End If
+
+    '    ' 3. Protected system roots (you can add more if you want)
+    '    ' This is to prevent users from accidentally doing something really bad
+    '    ' like copying their entire Windows folder somewhere else and screwing
+    '    ' up their system
+    '    'Dim protectedRoots As String() = {
+    '    '    "c:\windows",
+    '    '    "c:\windows\system32",
+    '    '    "c:\program files",
+    '    '    "c:\program files (x86)",
+    '    '    "c:\programdata",
+    '    '    "c:\system volume information",
+    '    '    "c:\$recycle.bin",
+    '    '    "c:\perflogs",
+    '    '    "c:\system.sav",
+    '    '    "c:\recovery",
+    '    '    "c:\documents and settings",
+    '    '    "c:\msocache",
+    '    '    "c:\$winreagent",
+    '    '    "c:\$windows.~bt",
+    '    '    "c:\$windows.~ws",
+    '    '    "c:\onedrivetemp",
+    '    '    "c:\users\all users",
+    '    '    "c:\users\default user",
+    '    '    "c:\users\default\appdata\local\application data",
+    '    '    "c:\users\default\appdata\local\history",
+    '    '    "c:\users\default\appdata\local\temporary internet files",
+    '    '    "c:\users\default\appdata\local\virtualstore",
+    '    '    "c:\users\public\desktop",
+    '    '    "c:\users\public\documents",
+    '    '    "c:\users\public\downloads",
+    '    '    "c:\users\public\music",
+    '    '    "c:\users\public\pictures",
+    '    '    "c:\users\public\videos",
+    '    '    "c:\users\public\appdata",
+    '    '    "c:\users\public\appdata\local"
+    '    '}
+
+    '    Dim srcLower = src.ToLower()
+
+    '    For Each p In ProtectedRoots
+    '        If srcLower = p OrElse srcLower.StartsWith(p & "\") Then
+    '            ShowValidationError("This folder is protected by Windows and cannot be copied:" & vbCrLf & p)
+    '            Return
+    '        End If
+    '    Next
+
+    '    ' 4. Cannot copy drive root
+    '    If srcLower Like "?:\" Then
+    '        ShowValidationError("Copying an entire drive root is not supported.")
+    '        Return
+    '    End If
+
+    '    ' 5. If source is a file, destination must be a folder
+    '    If File.Exists(src) AndAlso Not Directory.Exists(dst) Then
+    '        ShowValidationError("When copying a file, the destination must be a folder.")
+    '        Return
+    '    End If
+
+    '    '===============================
+    '    ' VALIDATION PASSED
+    '    '===============================
+
+    '    Dim engine As New CopyEngine()
+    '    engine.StartCopy(src, dst)
+
+    '    Using dlg As New CopyDialog(engine)
+    '        dlg.ShowDialog(Me)
+    '    End Using
+    'End Sub
+
+
+
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         Dim src As String = txtSource.Text.Trim()
@@ -112,10 +244,17 @@ Public Class Form1
             Return
         End If
 
-        ' 2. Cannot copy folder into itself or subfolder
+        ' 2. Protected source path
+        If IsProtectedPath(src) Then
+            ShowValidationError("This folder or file is protected by Windows and cannot be copied." &
+                            vbCrLf & src)
+            Return
+        End If
+
+        ' 3. Cannot copy folder into itself or subfolder
         If Directory.Exists(src) Then
-            Dim s = src.TrimEnd("\"c).ToLower()
-            Dim d = dst.TrimEnd("\"c).ToLower()
+            Dim s = src.TrimEnd("\"c).ToLower() ' Normalize source path for comparison
+            Dim d = dst.TrimEnd("\"c).ToLower() ' Normalize destination path for comparison
 
             If d = s OrElse d.StartsWith(s & "\") Then
                 ShowValidationError("You cannot copy a folder into itself or one of its subfolders.")
@@ -123,59 +262,7 @@ Public Class Form1
             End If
         End If
 
-        ' 3. Protected system roots (you can add more if you want)
-        ' This is to prevent users from accidentally doing something really bad
-        ' like copying their entire Windows folder somewhere else and screwing
-        ' up their system
-        Dim protectedRoots As String() = {
-            "c:\windows",
-            "c:\windows\system32",
-            "c:\program files",
-            "c:\program files (x86)",
-            "c:\programdata",
-            "c:\system volume information",
-            "c:\$recycle.bin",
-            "c:\perflogs",
-            "c:\system.sav",
-            "c:\recovery",
-            "c:\documents and settings",
-            "c:\msocache",
-            "c:\$winreagent",
-            "c:\$windows.~bt",
-            "c:\$windows.~ws",
-            "c:\onedrivetemp",
-            "c:\users\all users",
-            "c:\users\default user",
-            "c:\users\default\appdata\local\application data",
-            "c:\users\default\appdata\local\history",
-            "c:\users\default\appdata\local\temporary internet files",
-            "c:\users\default\appdata\local\virtualstore",
-            "c:\users\public\desktop",
-            "c:\users\public\documents",
-            "c:\users\public\downloads",
-            "c:\users\public\music",
-            "c:\users\public\pictures",
-            "c:\users\public\videos",
-            "c:\users\public\appdata",
-            "c:\users\public\appdata\local"
-        }
-
-        Dim srcLower = src.ToLower()
-
-        For Each p In protectedRoots
-            If srcLower = p OrElse srcLower.StartsWith(p & "\") Then
-                ShowValidationError("This folder is protected by Windows and cannot be copied:" & vbCrLf & p)
-                Return
-            End If
-        Next
-
-        ' 4. Cannot copy drive root
-        If srcLower Like "?:\" Then
-            ShowValidationError("Copying an entire drive root is not supported.")
-            Return
-        End If
-
-        ' 5. If source is a file, destination must be a folder
+        ' 4. If source is a file, destination must be a folder
         If File.Exists(src) AndAlso Not Directory.Exists(dst) Then
             ShowValidationError("When copying a file, the destination must be a folder.")
             Return
@@ -193,6 +280,21 @@ Public Class Form1
         End Using
     End Sub
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     '===============================
     ' WINDOWS 7 STYLE ERROR DIALOG
     '===============================
@@ -201,5 +303,34 @@ Public Class Form1
             dlg.ShowDialog(Me)
         End Using
     End Sub
+
+
+    Public Shared Function IsProtectedPath(path As String) As Boolean
+        If String.IsNullOrWhiteSpace(path) Then Return False
+
+        Dim normalized As String = path.Trim().TrimEnd("\"c).ToLowerInvariant()
+
+        ' Drive root protection (C:\)
+        If normalized.Length = 2 AndAlso normalized(1) = ":"c Then
+            Return True
+        End If
+
+        For Each root In ProtectedRoots
+            Dim r = root.TrimEnd("\"c).ToLowerInvariant()
+
+            ' Exact match
+            If normalized = r Then
+                Return True
+            End If
+
+            ' Subdirectory match
+            If normalized.StartsWith(r & "\") Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
 
 End Class
