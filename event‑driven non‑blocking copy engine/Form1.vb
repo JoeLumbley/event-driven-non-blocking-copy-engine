@@ -123,7 +123,10 @@ Public Class Form1
             End If
         End If
 
-        ' 3. Protected system roots
+        ' 3. Protected system roots (you can add more if you want)
+        ' This is to prevent users from accidentally doing something really bad
+        ' like copying their entire Windows folder somewhere else and screwing
+        ' up their system
         Dim protectedRoots As String() = {
             "c:\windows",
             "c:\windows\system32",
@@ -145,10 +148,17 @@ Public Class Form1
             "c:\users\default user",
             "c:\users\default\appdata\local\application data",
             "c:\users\default\appdata\local\history",
-            "c:\users\default\appdata\local\temporary internet files"
+            "c:\users\default\appdata\local\temporary internet files",
+            "c:\users\default\appdata\local\virtualstore",
+            "c:\users\public\desktop",
+            "c:\users\public\documents",
+            "c:\users\public\downloads",
+            "c:\users\public\music",
+            "c:\users\public\pictures",
+            "c:\users\public\videos",
+            "c:\users\public\appdata",
+            "c:\users\public\appdata\local"
         }
-
-
 
         Dim srcLower = src.ToLower()
 
