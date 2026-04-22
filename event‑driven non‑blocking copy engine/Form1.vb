@@ -124,62 +124,6 @@ Public Class Form1
         End If
 
         ' 3. Protected system roots
-        'Dim protectedRoots As String() = {
-        '    "c:\windows",
-        '    "c:\windows\system32",
-        '    "c:\program files",
-        '    "c:\program files (x86)",
-        '    "c:\system volume information",
-        '    "c:\$recycle.bin",
-        '    "c:\perflogs"
-        '}
-
-
-        'Dim protectedRoots As String() = {
-        '    "c:\windows",
-        '    "c:\windows\system32",
-        '    "c:\program files",
-        '    "c:\program files (x86)",
-        '    "c:\system volume information",
-        '    "c:\$recycle.bin",
-        '    "c:\perflogs",
-        '    "c:\system.sav"
-        '}
-
-
-        'Dim protectedRoots As String() = {
-        '    "c:\windows",
-        '    "c:\windows\system32",
-        '    "c:\program files",
-        '    "c:\program files (x86)",
-        '    "c:\system volume information",
-        '    "c:\$recycle.bin",
-        '    "c:\perflogs",
-        '    "c:\system.sav",
-        '    "c:\recovery"
-        '}
-        'Dim protectedRoots As String() = {
-        '    "c:\windows",
-        '    "c:\windows\system32",
-        '    "c:\program files",
-        '    "c:\program files (x86)",
-        '    "c:\system volume information",
-        '    "c:\$recycle.bin",
-        '    "c:\perflogs",
-        '    "c:\system.sav",
-        '    "c:\recovery",
-        '    "c:\documents and settings",
-        '    "c:\msocache",
-        '    "c:\$winreagent",
-        '    "c:\$windows.~bt",
-        '    "c:\$windows.~ws",
-        '    "c:\onedrivetemp",
-        '    "c:\users\all users",
-        '    "c:\users\default user",
-        '    "c:\users\default\appdata\local\application data",
-        '    "c:\users\default\appdata\local\history",
-        '    "c:\users\default\appdata\local\temporary internet files"
-        '}
         Dim protectedRoots As String() = {
             "c:\windows",
             "c:\windows\system32",
