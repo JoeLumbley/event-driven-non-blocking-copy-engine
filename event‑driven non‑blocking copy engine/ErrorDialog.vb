@@ -1,44 +1,4 @@
-﻿'Public Class ErrorDialog
-
-'    Private filePath As String
-'    Private err As Exception
-
-'    Public Sub New(file As String, ex As Exception)
-'        InitializeComponent()
-'        filePath = file
-'        err = ex
-'    End Sub
-
-'    Private Sub ErrorDialog_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-'        lblFile.Text = filePath
-'        txtError.Text = err.Message
-'    End Sub
-
-'    ' Buttons:
-'    ' btnIgnore → DialogResult.Ignore
-'    ' btnSkipAll → DialogResult.Yes
-'    ' btnCancel → DialogResult.Cancel
-
-'    Private Sub btnIgnore_Click(sender As Object, e As EventArgs) Handles btnIgnore.Click
-'        Me.DialogResult = DialogResult.Ignore
-'        Me.Close()
-'    End Sub
-
-'    Private Sub btnSkipAll_Click(sender As Object, e As EventArgs) Handles btnSkipAll.Click
-'        Me.DialogResult = DialogResult.Yes
-'        Me.Close()
-'    End Sub
-
-'    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-'        Me.DialogResult = DialogResult.Cancel
-'        Me.Close()
-'    End Sub
-
-'End Class
-
-
-
-
+﻿
 Public Class ErrorDialog
     Inherits Form
 
