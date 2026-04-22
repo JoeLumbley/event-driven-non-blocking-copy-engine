@@ -2,10 +2,11 @@
 
 
 
-<img width="1254" height="635" alt="002" src="https://github.com/user-attachments/assets/11a783de-4a03-4a68-b93e-c1d0f39cec5f" />
+
+
+<img width="640" height="320" alt="003" src="https://github.com/user-attachments/assets/7462800a-a680-47a7-8fec-d282c3947518" />
 
 
 
 
-<img width="1280" height="640" alt="005" src="https://github.com/user-attachments/assets/356482bf-eebd-47c4-bcdd-512bf410bd57" />
-
+<img width="640" height="320" alt="006" src="https://github.com/user-attachments/assets/75dfede5-9597-40ed-8e73-2ce2b5103dd5" />
