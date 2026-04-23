@@ -224,6 +224,86 @@ Public Class Form1
 
 
 
+    'Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+
+    '    Dim src As String = txtSource.Text.Trim()
+    '    Dim dst As String = txtDest.Text.Trim()
+
+    '    '===============================
+    '    ' VALIDATION
+    '    '===============================
+
+    '    ' 1. Must exist
+    '    If Not File.Exists(src) AndAlso Not Directory.Exists(src) Then
+    '        ShowValidationError("The source path does not exist.")
+    '        Return
+    '    End If
+
+    '    If Not Directory.Exists(dst) Then
+    '        ShowValidationError("The destination folder does not exist.")
+    '        Return
+    '    End If
+
+    '    ' 2. Protected source path
+    '    If IsProtectedPath(src) Then
+    '        ShowValidationError("This folder or file is protected by Windows and cannot be copied." &
+    '                        vbCrLf & src)
+    '        Return
+    '    End If
+
+    '    ' 3. Cannot copy folder into itself or subfolder
+    '    If Directory.Exists(src) Then
+    '        Dim s = src.TrimEnd("\"c).ToLower() ' Normalize source path for comparison
+    '        Dim d = dst.TrimEnd("\"c).ToLower() ' Normalize destination path for comparison
+
+    '        If d = s OrElse d.StartsWith(s & "\") Then
+    '            ShowValidationError("You cannot copy a folder into itself or one of its subfolders.")
+    '            Return
+    '        End If
+    '    End If
+
+    '    ' 4. If source is a file, destination must be a folder
+    '    If File.Exists(src) AndAlso Not Directory.Exists(dst) Then
+    '        ShowValidationError("When copying a file, the destination must be a folder.")
+    '        Return
+    '    End If
+
+    '    ' 5. Overwrite warning (single file copy)
+    '    If File.Exists(src) Then
+    '        Dim fileName As String = Path.GetFileName(src)
+    '        Dim destFile As String = Path.Combine(dst, fileName)
+
+    '        If File.Exists(destFile) Then
+    '            Dim msg As String =
+    '        "The file '" & fileName & "' already exists in the destination folder." & vbCrLf &
+    '        "Do you want to overwrite it?"
+
+    '            Dim result = MessageBox.Show(Me, msg, "Confirm File Replace",
+    '                                 MessageBoxButtons.YesNo,
+    '                                 MessageBoxIcon.Warning)
+
+    '            If result = DialogResult.No Then
+    '                Return
+    '            End If
+    '        End If
+    '    End If
+
+
+    '    '===============================
+    '    ' VALIDATION PASSED
+    '    '===============================
+
+    '    Dim engine As New CopyEngine()
+    '    engine.StartCopy(src, dst)
+
+    '    Using dlg As New CopyDialog(engine)
+    '        dlg.ShowDialog(Me)
+    '    End Using
+    'End Sub
+
+
+
+
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         Dim src As String = txtSource.Text.Trim()
@@ -253,8 +333,8 @@ Public Class Form1
 
         ' 3. Cannot copy folder into itself or subfolder
         If Directory.Exists(src) Then
-            Dim s = src.TrimEnd("\"c).ToLower() ' Normalize source path for comparison
-            Dim d = dst.TrimEnd("\"c).ToLower() ' Normalize destination path for comparison
+            Dim s = src.TrimEnd("\"c).ToLower()
+            Dim d = dst.TrimEnd("\"c).ToLower()
 
             If d = s OrElse d.StartsWith(s & "\") Then
                 ShowValidationError("You cannot copy a folder into itself or one of its subfolders.")
@@ -269,6 +349,67 @@ Public Class Form1
         End If
 
         '===============================
+        ' OVERWRITE WARNINGS
+        '===============================
+
+        ' 5. File-level overwrite warning
+        If File.Exists(src) Then
+            Dim fileName As String = Path.GetFileName(src)
+            Dim destFile As String = Path.Combine(dst, fileName)
+
+            If File.Exists(destFile) Then
+                Dim msg As String =
+                "The file '" & fileName & "' already exists in the destination folder." & vbCrLf &
+                "Do you want to overwrite it?"
+
+                Dim result = MessageBox.Show(Me, msg, "Confirm File Replace",
+                                         MessageBoxButtons.YesNo,
+                                         MessageBoxIcon.Warning)
+
+                If result = DialogResult.No Then
+                    Return
+                End If
+            End If
+        End If
+
+        ' 6. Folder-level overwrite warning
+        'If Directory.Exists(src) Then
+        '    Dim folderName As String = Path.GetFileName(src.TrimEnd("\"c))
+        '    Dim destFolder As String = Path.Combine(dst, folderName)
+
+        '    If Directory.Exists(destFolder) Then
+        '        Dim msg As String =
+        '        "The destination already contains a folder named '" & folderName & "'." & vbCrLf &
+        '        "Do you want to merge these folders?"
+
+        '        Dim result = MessageBox.Show(Me, msg, "Confirm Folder Merge",
+        '                                 MessageBoxButtons.YesNo,
+        '                                 MessageBoxIcon.Warning)
+
+        '        If result = DialogResult.No Then
+        '            Return
+        '        End If
+        '    End If
+        'End If
+
+
+        ' 6. Folder-level overwrite warning (custom dialog)
+        If Directory.Exists(src) Then
+            Dim folderName As String = Path.GetFileName(src.TrimEnd("\"c))
+            Dim destFolder As String = Path.Combine(dst, folderName)
+
+            If Directory.Exists(destFolder) Then
+                Using dlg As New FolderMergeDialog(folderName)
+                    Dim result = dlg.ShowDialog(Me)
+                    If result = DialogResult.No Then
+                        Return
+                    End If
+                End Using
+            End If
+        End If
+
+
+        '===============================
         ' VALIDATION PASSED
         '===============================
 
@@ -279,10 +420,6 @@ Public Class Form1
             dlg.ShowDialog(Me)
         End Using
     End Sub
-
-
-
-
 
 
 
