@@ -327,7 +327,7 @@ Public Class Form1
         ' 2. Protected source path
         If IsProtectedPath(src) Then
             ShowValidationError("This folder or file is protected by Windows and cannot be copied." &
-                            vbCrLf & src)
+                                vbCrLf & src)
             Return
         End If
 
