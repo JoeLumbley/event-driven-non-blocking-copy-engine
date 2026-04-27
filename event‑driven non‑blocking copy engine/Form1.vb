@@ -58,7 +58,6 @@ Public Class Form1
     "c:\users\default\appdata\local\temporary internet files"
 }
 
-
     Private Sub btnBrowseSource_Click(sender As Object, e As EventArgs) Handles btnBrowseSource.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
