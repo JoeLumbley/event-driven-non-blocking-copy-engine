@@ -1,6 +1,7 @@
 # Event‑Driven Non‑Blocking Copy Engine
 
 
+
 <img width="1254" height="635" alt="002" src="https://github.com/user-attachments/assets/1d97a189-325b-434f-afc2-632d4cfd68b8" />
 
 **Event‑Driven Non‑Blocking Copy Engine** is a small Windows Forms project that demonstrates how to build a responsive file/folder copy subsystem. It validates sources, blocks protected system paths, shows Explorer‑style overwrite and folder‑merge dialogs, and performs the copy work on a background thread while reporting progress via events.
@@ -44,6 +45,11 @@
 - **Protected path list** centralizes system and kernel‑locked paths and is checked by `IsProtectedPath(path As String)`.  
 - **CopyEngine** performs scanning, creates folders, copies files in buffered chunks, reports progress, and raises events for errors and completion.  
 - **CopyDialog** subscribes to engine events and displays progress without blocking the UI.
+
+---
+
+## Project origin  
+I started this project intending to implement the simplest possible copy operation. That first implementation worked but it blocked the UI. After asking Copilot how to avoid freezing the app, I was pointed toward an event‑driven, non‑blocking design. I created a new repository and project called Event‑Driven Non‑Blocking Copy Engine, scaffolded the classes, pasted in the generated code, and ran the first copy test. What began as a tiny feature turned into a small subsystem: a background copy engine that reports progress via events, validates protected paths, and keeps the UI responsive.
 
 ---
 
