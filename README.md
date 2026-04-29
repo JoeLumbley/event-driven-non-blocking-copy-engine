@@ -1,12 +1,15 @@
 # Event‑Driven Non‑Blocking Copy Engine
 
 
- <img width="640" height="320" alt="003" src="https://github.com/user-attachments/assets/7462800a-a680-47a7-8fec-d282c3947518" />
+<img width="1254" height="635" alt="002" src="https://github.com/user-attachments/assets/1d97a189-325b-434f-afc2-632d4cfd68b8" />
 
 **Event‑Driven Non‑Blocking Copy Engine** is a small Windows Forms project that demonstrates how to build a responsive file/folder copy subsystem. It validates sources, blocks protected system paths, shows Explorer‑style overwrite and folder‑merge dialogs, and performs the copy work on a background thread while reporting progress via events.
 
 ---
-<img width="640" height="320" alt="006" src="https://github.com/user-attachments/assets/75dfede5-9597-40ed-8e73-2ce2b5103dd5" />
+
+<img width="1280" height="640" alt="005" src="https://github.com/user-attachments/assets/387a8922-8da1-49af-9f41-119c920bca8a" />
+
+
 
 ## Features
 - **Non‑blocking copy** using a background worker engine and events.  
@@ -28,7 +31,7 @@
 
 ---
 
-### Usage Notes for Beginners
+## Usage Notes for Beginners
 - **What blocks** the UI: any long synchronous work on the UI thread (file I/O, heavy loops).  
 - **How this app avoids blocking**: `CopyEngine` runs on a background thread and raises `ProgressChanged`, `ErrorOccurred`, and `Completed` events; the UI subscribes and marshals updates to the UI thread.  
 - **Where decisions belong**: quick validation and overwrite/merge confirmations happen on the UI thread before the engine starts; runtime conflict resolution is handled by the engine via events.  
@@ -36,7 +39,7 @@
 
 ---
 
-### Architecture Overview
+## Architecture Overview
 - **Form1** handles user input, validation, and pre‑copy dialogs.  
 - **Protected path list** centralizes system and kernel‑locked paths and is checked by `IsProtectedPath(path As String)`.  
 - **CopyEngine** performs scanning, creates folders, copies files in buffered chunks, reports progress, and raises events for errors and completion.  
@@ -44,7 +47,7 @@
 
 ---
 
-### License
+## License
 **MIT License**  
 Copyright (c) 2026 Joseph W. Lumbley
 
