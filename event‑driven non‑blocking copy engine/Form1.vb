@@ -213,9 +213,6 @@ Public Class Form1
 
 
 
-
-
-
     '===============================
     ' WINDOWS 7 STYLE ERROR DIALOG
     '===============================
