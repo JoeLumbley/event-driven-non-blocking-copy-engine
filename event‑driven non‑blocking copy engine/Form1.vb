@@ -180,6 +180,42 @@ Public Class Form1
         End Using
     End Sub
 
+
+
+
+    '' Synchronous, blocking example inside a button click handler
+    'Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+    '    Dim src = txtSource.Text.Trim()
+    '    Dim dst = txtDest.Text.Trim()
+
+    '    ' Quick validation omitted for brevity
+
+    '    If File.Exists(src) Then
+    '        ' This call blocks the UI until the copy finishes
+    '        File.Copy(src, Path.Combine(dst, Path.GetFileName(src)), True)
+    '    ElseIf Directory.Exists(src) Then
+    '        ' Recursive synchronous copy — also blocks the UI
+    '        DirectoryCopy(src, Path.Combine(dst, Path.GetFileName(src)))
+    '    End If
+
+    '    MessageBox.Show("Copy finished") ' UI was frozen until this point
+    'End Sub
+
+    'Private Sub DirectoryCopy(sourceDir As String, destDir As String)
+    '    Directory.CreateDirectory(destDir)
+    '    For Each file In Directory.GetFiles(sourceDir)
+    '        IO.File.Copy(file, IO.Path.Combine(destDir, IO.Path.GetFileName(file)), True)
+    '    Next
+    '    For Each Dir2Copy In Directory.GetDirectories(sourceDir)
+    '        DirectoryCopy(Dir2Copy, Path.Combine(destDir, Path.GetFileName(Dir2Copy)))
+    '    Next
+    'End Sub
+
+
+
+
+
+
     '===============================
     ' WINDOWS 7 STYLE ERROR DIALOG
     '===============================
