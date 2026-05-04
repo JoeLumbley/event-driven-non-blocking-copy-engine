@@ -22,36 +22,6 @@
 
 ---
 
-## Quick Start
-1. **Open the solution** in Visual Studio.  
-2. Build the project (target .NET Framework compatible with Windows Forms).  
-3. Run the app.  
-4. Select a **Source** (file or folder) and a **Destination folder**.  
-5. Click **Start**.  
-6. Respond to any pre‑copy dialogs (overwrite or merge). The copy runs in the background and the UI remains responsive.
-
----
-
-## Usage Notes for Beginners
-- **What blocks** the UI: any long synchronous work on the UI thread (file I/O, heavy loops).  
-- **How this app avoids blocking**: `CopyEngine` runs on a background thread and raises `ProgressChanged`, `ErrorOccurred`, and `Completed` events; the UI subscribes and marshals updates to the UI thread.  
-- **Where decisions belong**: quick validation and overwrite/merge confirmations happen on the UI thread before the engine starts; runtime conflict resolution is handled by the engine via events.  
-- **If you modify code**: keep UI updates on the UI thread (use `Invoke`/`BeginInvoke`) and avoid calling `.Wait()` or `.Result` on long operations.
-
----
-
-## Architecture Overview
-- **Form1** handles user input, validation, and pre‑copy dialogs.  
-- **Protected path list** centralizes system and kernel‑locked paths and is checked by `IsProtectedPath(path As String)`.  
-- **CopyEngine** performs scanning, creates folders, copies files in buffered chunks, reports progress, and raises events for errors and completion.  
-- **CopyDialog** subscribes to engine events and displays progress without blocking the UI.
-
----
-
-## Project origin  
-I started this project intending to implement the simplest possible copy operation. That first implementation worked but it blocked the UI. After asking Copilot how to avoid freezing the app, I was pointed toward an event‑driven, non‑blocking design. I created a new repository and project called Event‑Driven Non‑Blocking Copy Engine, scaffolded the classes, pasted in the generated code, and ran the first copy test. What began as a tiny feature turned into a small subsystem: a background copy engine that reports progress via events, validates protected paths, and keeps the UI responsive.
-
----
 
 ### Before — blocking copy (what freezes the UI)
 
@@ -186,6 +156,36 @@ End Sub
 6. **Keep pre‑copy prompts synchronous** (overwrite/merge) so the engine never blocks waiting for user input.
 
 ---
+
+## Quick Start
+1. **Open the solution** in Visual Studio.  
+2. Build the project (target .NET Framework compatible with Windows Forms).  
+3. Run the app.  
+4. Select a **Source** (file or folder) and a **Destination folder**.  
+5. Click **Start**.  
+6. Respond to any pre‑copy dialogs (overwrite or merge). The copy runs in the background and the UI remains responsive.
+
+---
+
+## Usage Notes for Beginners
+- **What blocks** the UI: any long synchronous work on the UI thread (file I/O, heavy loops).  
+- **How this app avoids blocking**: `CopyEngine` runs on a background thread and raises `ProgressChanged`, `ErrorOccurred`, and `Completed` events; the UI subscribes and marshals updates to the UI thread.  
+- **Where decisions belong**: quick validation and overwrite/merge confirmations happen on the UI thread before the engine starts; runtime conflict resolution is handled by the engine via events.  
+- **If you modify code**: keep UI updates on the UI thread (use `Invoke`/`BeginInvoke`) and avoid calling `.Wait()` or `.Result` on long operations.
+
+---
+
+## Architecture Overview
+- **Form1** handles user input, validation, and pre‑copy dialogs.  
+- **Protected path list** centralizes system and kernel‑locked paths and is checked by `IsProtectedPath(path As String)`.  
+- **CopyEngine** performs scanning, creates folders, copies files in buffered chunks, reports progress, and raises events for errors and completion.  
+- **CopyDialog** subscribes to engine events and displays progress without blocking the UI.
+
+---
+
+## Project origin  
+I started this project intending to implement the simplest possible copy operation. That first implementation worked but it blocked the UI. After asking Copilot how to avoid freezing the app, I was pointed toward an event‑driven, non‑blocking design. I created a new repository and project called Event‑Driven Non‑Blocking Copy Engine, scaffolded the classes, pasted in the generated code, and ran the first copy test. What began as a tiny feature turned into a small subsystem: a background copy engine that reports progress via events, validates protected paths, and keeps the UI responsive.
+
 
 
 ## License
