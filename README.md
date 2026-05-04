@@ -53,6 +53,141 @@ I started this project intending to implement the simplest possible copy operati
 
 ---
 
+### Before — blocking copy (what freezes the UI)
+
+**Problem:** this runs on the UI thread and blocks message processing while files copy.
+
+```vbnet
+' Synchronous, blocking example inside a button click handler
+Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+    Dim src = txtSource.Text.Trim()
+    Dim dst = txtDest.Text.Trim()
+
+    ' Quick validation omitted for brevity
+
+    If File.Exists(src) Then
+        ' This call blocks the UI until the copy finishes
+        File.Copy(src, Path.Combine(dst, Path.GetFileName(src)), True)
+    ElseIf Directory.Exists(src) Then
+        ' Recursive synchronous copy — also blocks the UI
+        DirectoryCopy(src, Path.Combine(dst, Path.GetFileName(src)))
+    End If
+
+    MessageBox.Show("Copy finished") ' UI was frozen until this point
+End Sub
+
+Private Sub DirectoryCopy(sourceDir As String, destDir As String)
+    Directory.CreateDirectory(destDir)
+    For Each file In Directory.GetFiles(sourceDir)
+        File.Copy(file, Path.Combine(destDir, Path.GetFileName(file)), True)
+    Next
+    For Each dir In Directory.GetDirectories(sourceDir)
+        DirectoryCopy(dir, Path.Combine(destDir, Path.GetFileName(dir)))
+    Next
+End Sub
+```
+
+---
+
+### After — non‑blocking, event‑driven copy (UI stays responsive)
+
+**Approach:** start the copy engine from the UI thread, subscribe to its events, and update the UI only from the UI thread. The engine does the heavy work on a background thread.
+
+```vbnet
+' Start the engine and subscribe to events
+Private engine As CopyEngine
+
+Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+    Dim src = txtSource.Text.Trim()
+    Dim dst = txtDest.Text.Trim()
+
+    ' Perform quick, synchronous validation here (exists, protected paths, overwrite prompts)
+    ' If validation passes, start the engine
+
+    engine = New CopyEngine()
+    AddHandler engine.ProgressChanged, AddressOf Engine_ProgressChanged
+    AddHandler engine.ErrorOccurred, AddressOf Engine_ErrorOccurred
+    AddHandler engine.Completed, AddressOf Engine_Completed
+
+    engine.StartCopy(src, dst)
+
+    ' Optionally show a non-blocking progress dialog that listens to the same events
+    Dim dlg As New CopyDialog(engine)
+    dlg.Show(Me)
+End Sub
+
+' Event handlers marshal updates to the UI thread
+Private Sub Engine_ProgressChanged(info As CopyProgressInfo)
+    If Me.InvokeRequired Then
+        Me.BeginInvoke(New Action(Of CopyProgressInfo)(AddressOf Engine_ProgressChanged), info)
+        Return
+    End If
+
+    ' Update progress bar and labels on UI thread
+    progressBar.Value = Math.Min(100, info.Percent)
+    lblStatus.Text = $"{info.CurrentFile} — {info.FilesDone}/{info.TotalFiles} ({info.Percent}%)"
+    lblEta.Text = info.Eta.ToString("hh\:mm\:ss")
+End Sub
+
+Private Sub Engine_ErrorOccurred(file As String, ex As Exception)
+    If Me.InvokeRequired Then
+        Me.BeginInvoke(New Action(Of String, Exception)(AddressOf Engine_ErrorOccurred), file, ex)
+        Return
+    End If
+
+    ' Show non-blocking error UI or queue user decision dialog
+    Using errDlg As New CopyErrorDialog(file, ex)
+        Dim action = errDlg.ShowDialog(Me)
+        Select Case action
+            Case DialogResult.Yes
+                engine.SetErrorAction(CopyErrorAction.Skip)
+            Case DialogResult.No
+                engine.SetErrorAction(CopyErrorAction.SkipAll)
+            Case DialogResult.Cancel
+                engine.SetErrorAction(CopyErrorAction.Cancel)
+        End Select
+    End Using
+End Sub
+
+Private Sub Engine_Completed(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
+    If Me.InvokeRequired Then
+        Me.BeginInvoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf Engine_Completed), success, hadSkips, hadErrors)
+        Return
+    End If
+
+    MessageBox.Show(If(success, "Copy completed", "Copy cancelled or failed"))
+End Sub
+
+' Cancel button example
+Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+    engine?.Cancel()
+End Sub
+```
+
+---
+
+### Key points for beginners
+
+- **What blocks:** any long synchronous call on the UI thread (file I/O, heavy loops, network calls).  
+- **Why non‑blocking matters:** the UI thread must keep processing messages so the app remains responsive.  
+- **How to avoid blocking:** run long work on background threads or use asynchronous APIs; report progress via events or callbacks; marshal UI updates back to the UI thread with `Invoke`/`BeginInvoke`.  
+- **Where decisions belong:** do quick validations and user confirmations on the UI thread before starting the engine; let the engine handle runtime conflicts and report them via events.  
+- **Cancellation:** provide a `Cancel` method and check for cancellation inside the engine so long operations stop cooperatively.
+
+---
+
+### Small checklist to convert a blocking operation to non‑blocking
+
+1. **Identify** the blocking call(s) on the UI thread.  
+2. **Extract** the work into a background worker, `Task.Run`, or a dedicated engine class.  
+3. **Raise events** for progress, errors, and completion.  
+4. **Subscribe** to those events from the UI and marshal updates with `Invoke`.  
+5. **Add cancellation** support and cooperative checks inside the worker.  
+6. **Keep pre‑copy prompts synchronous** (overwrite/merge) so the engine never blocks waiting for user input.
+
+---
+
+
 ## License
 **MIT License**  
 Copyright (c) 2026 Joseph W. Lumbley
