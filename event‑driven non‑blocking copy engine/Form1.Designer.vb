@@ -109,6 +109,7 @@ Partial Class Form1
         Me.Controls.Add(Me.btnBrowseSource)
         Me.Controls.Add(Me.txtDest)
         Me.Controls.Add(Me.txtSource)
+        Me.Controls.Add(Me.btnCancel)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
