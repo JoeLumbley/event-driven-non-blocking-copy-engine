@@ -242,7 +242,7 @@ Public Class Form1
         ' - The user has confirmed any overwrites/merges.
         ' - We can safely start the non-blocking copy engine.
 
-        ' Disable the Start button and show a Cancel button.
+        ' Disable the Start button and show the Cancel button.
         btnStart.Enabled = False
         btnCancel.Visible = True
 
@@ -399,8 +399,11 @@ Public Class Form1
             Dim summary As New ErrorSummaryDialog(engine.ErrorList)
             summary.ShowDialog(Me)
         End If
-        If btnCancel.Visible Then btnCancel.Visible = False
+
+        ' Enable the Start button and hide the Cancel button
         If Not btnStart.Enabled Then btnStart.Enabled = True
+        If btnCancel.Visible Then btnCancel.Visible = False
+
     End Sub
 
 End Class
