@@ -597,7 +597,7 @@ Public Class Form1
     End Function
 
     '===============================
-    '  CANCEL BUTTON (OPTIONAL)
+    '  CANCEL BUTTON
     '===============================
     ' If you have a Cancel button on the main form, you can wire it like this:
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
