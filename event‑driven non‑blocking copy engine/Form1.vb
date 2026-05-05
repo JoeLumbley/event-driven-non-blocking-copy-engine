@@ -183,33 +183,33 @@
 
 
 
-'    '' Synchronous, blocking example inside a button click handler
-'    'Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
-'    '    Dim src = txtSource.Text.Trim()
-'    '    Dim dst = txtDest.Text.Trim()
+'' Synchronous, blocking example inside a button click handler
+'Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+'    Dim src = txtSource.Text.Trim()
+'    Dim dst = txtDest.Text.Trim()
 
-'    '    ' Quick validation omitted for brevity
+'    ' Quick validation omitted for brevity
 
-'    '    If File.Exists(src) Then
-'    '        ' This call blocks the UI until the copy finishes
-'    '        File.Copy(src, Path.Combine(dst, Path.GetFileName(src)), True)
-'    '    ElseIf Directory.Exists(src) Then
-'    '        ' Recursive synchronous copy — also blocks the UI
-'    '        DirectoryCopy(src, Path.Combine(dst, Path.GetFileName(src)))
-'    '    End If
+'    If IO.File.Exists(src) Then
+'        ' This call blocks the UI until the copy finishes
+'        IO.File.Copy(src, IO.Path.Combine(dst, IO.Path.GetFileName(src)), True)
+'    ElseIf IO.Directory.Exists(src) Then
+'        ' Recursive synchronous copy — also blocks the UI
+'        DirectoryCopy(src, IO.Path.Combine(dst, IO.Path.GetFileName(src)))
+'    End If
 
-'    '    MessageBox.Show("Copy finished") ' UI was frozen until this point
-'    'End Sub
+'    MessageBox.Show("Copy finished") ' UI was frozen until this point
+'End Sub
 
-'    'Private Sub DirectoryCopy(sourceDir As String, destDir As String)
-'    '    Directory.CreateDirectory(destDir)
-'    '    For Each file In Directory.GetFiles(sourceDir)
-'    '        IO.File.Copy(file, IO.Path.Combine(destDir, IO.Path.GetFileName(file)), True)
-'    '    Next
-'    '    For Each Dir2Copy In Directory.GetDirectories(sourceDir)
-'    '        DirectoryCopy(Dir2Copy, Path.Combine(destDir, Path.GetFileName(Dir2Copy)))
-'    '    Next
-'    'End Sub
+'Private Sub DirectoryCopy(sourceDir As String, destDir As String)
+'    IO.Directory.CreateDirectory(destDir)
+'    For Each file In IO.Directory.GetFiles(sourceDir)
+'        IO.File.Copy(file, IO.Path.Combine(destDir, IO.Path.GetFileName(file)), True)
+'    Next
+'    For Each Dir2Copy In IO.Directory.GetDirectories(sourceDir)
+'        DirectoryCopy(Dir2Copy, IO.Path.Combine(destDir, IO.Path.GetFileName(Dir2Copy)))
+'    Next
+'End Sub
 
 
 
@@ -332,16 +332,16 @@ Public Class Form1
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         ' Read and trim user input.
-        Dim src As String = txtSource.Text.Trim()
-        Dim dst As String = txtDest.Text.Trim()
+        Dim sourceDirectory As String = txtSource.Text.Trim()
+        Dim destinationDirectory As String = txtDest.Text.Trim()
 
         ' Quick sanity checks for empty fields.
-        If String.IsNullOrWhiteSpace(src) Then
+        If String.IsNullOrWhiteSpace(sourceDirectory) Then
             ShowValidationError("Please select a source file or folder.")
             Return
         End If
 
-        If String.IsNullOrWhiteSpace(dst) Then
+        If String.IsNullOrWhiteSpace(destinationDirectory) Then
             ShowValidationError("Please select a destination folder.")
             Return
         End If
@@ -351,28 +351,28 @@ Public Class Form1
         '===============================
 
         ' 1. Source must exist (either file or folder).
-        If Not File.Exists(src) AndAlso Not Directory.Exists(src) Then
-            ShowValidationError("The source path does not exist." & vbCrLf & src)
+        If Not File.Exists(sourceDirectory) AndAlso Not Directory.Exists(sourceDirectory) Then
+            ShowValidationError("The source path does not exist." & vbCrLf & sourceDirectory)
             Return
         End If
 
         ' 2. Destination must be an existing folder.
-        If Not Directory.Exists(dst) Then
-            ShowValidationError("The destination folder does not exist." & vbCrLf & dst)
+        If Not Directory.Exists(destinationDirectory) Then
+            ShowValidationError("The destination folder does not exist." & vbCrLf & destinationDirectory)
             Return
         End If
 
         ' 3. Source must not be a protected system path.
-        If IsProtectedPath(src) Then
+        If IsProtectedPath(sourceDirectory) Then
             ShowValidationError("This folder or file is protected by Windows and cannot be copied." &
-                                vbCrLf & src)
+                                vbCrLf & sourceDirectory)
             Return
         End If
 
         ' 4. Prevent copying a folder into itself or one of its subfolders.
-        If Directory.Exists(src) Then
-            Dim s = src.TrimEnd("\"c).ToLowerInvariant()
-            Dim d = dst.TrimEnd("\"c).ToLowerInvariant()
+        If Directory.Exists(sourceDirectory) Then
+            Dim s = sourceDirectory.TrimEnd("\"c).ToLowerInvariant()
+            Dim d = destinationDirectory.TrimEnd("\"c).ToLowerInvariant()
 
             ' Example: copying C:\Data into C:\Data or C:\Data\Subfolder is not allowed.
             If d = s OrElse d.StartsWith(s & "\") Then
@@ -382,26 +382,40 @@ Public Class Form1
         End If
 
         ' 5. When copying a file, destination must be a folder (Explorer-style behavior).
-        If File.Exists(src) AndAlso Not Directory.Exists(dst) Then
+        If File.Exists(sourceDirectory) AndAlso Not Directory.Exists(destinationDirectory) Then
             ShowValidationError("When copying a file, the destination must be a folder.")
             Return
         End If
 
         ' 6. Prevent file/folder name collisions where types differ (file vs folder).
         '    Explorer does not allow copying a file over a folder or a folder over a file.
-        Dim srcName As String = Path.GetFileName(src.TrimEnd("\"c))
-        Dim destChildPath As String = Path.Combine(dst, srcName)
+        Dim sourceName As String = Path.GetFileName(sourceDirectory.TrimEnd("\"c))
+        Dim destinationChildPath As String = Path.Combine(destinationDirectory, sourceName)
 
-        If File.Exists(src) AndAlso Directory.Exists(destChildPath) Then
-            ShowValidationError("A folder with the same name already exists in the destination." &
-                                vbCrLf & destChildPath)
+        If File.Exists(sourceDirectory) AndAlso Directory.Exists(destinationChildPath) Then
+
+            Dim errorMsg As String =
+                "A folder with the same name already exists in the destination." & Environment.NewLine &
+                destinationChildPath & Environment.NewLine &
+                "You cannot copy a file over a folder. Please choose a different destination or rename the source file."
+
+            ShowValidationError(errorMsg)
+
             Return
+
         End If
 
-        If Directory.Exists(src) AndAlso File.Exists(destChildPath) Then
-            ShowValidationError("A file with the same name already exists in the destination." &
-                                vbCrLf & destChildPath)
+        If Directory.Exists(sourceDirectory) AndAlso File.Exists(destinationChildPath) Then
+
+            Dim errorMsg As String =
+                "A file with the same name already exists in the destination." & Environment.NewLine &
+                destinationChildPath & Environment.NewLine &
+                "You cannot copy a folder over a file. Please choose a different destination or rename the source folder."
+
+            ShowValidationError(errorMsg)
+
             Return
+
         End If
 
         '===============================
@@ -409,18 +423,18 @@ Public Class Form1
         '===============================
 
         ' 7. File-level overwrite warning (single file copy).
-        If File.Exists(src) Then
-            Dim fileName As String = Path.GetFileName(src)
-            Dim destFile As String = Path.Combine(dst, fileName)
+        If File.Exists(sourceDirectory) Then
+            Dim fileName As String = Path.GetFileName(sourceDirectory)
+            Dim destinationFile As String = Path.Combine(destinationDirectory, fileName)
 
-            If File.Exists(destFile) Then
-                Dim msg As String =
+            If File.Exists(destinationFile) Then
+                Dim errorMsg As String =
                     "The file '" & fileName &
-                    "' already exists in the destination folder." & vbCrLf &
+                    "' already exists in the destination folder." & Environment.NewLine &
                     "Do you want to overwrite it?"
 
                 Dim result = MessageBox.Show(Me,
-                                             msg,
+                                             errorMsg,
                                              "Confirm File Replace",
                                              MessageBoxButtons.YesNo,
                                              MessageBoxIcon.Warning)
@@ -434,13 +448,13 @@ Public Class Form1
 
         ' 8. Folder-level merge warning (folder copy).
         '    This mimics the Windows 7 "Merge folders" dialog.
-        If Directory.Exists(src) Then
-            Dim folderName As String = Path.GetFileName(src.TrimEnd("\"c))
-            Dim destFolder As String = Path.Combine(dst, folderName)
+        If Directory.Exists(sourceDirectory) Then
+            Dim folderName As String = Path.GetFileName(sourceDirectory.TrimEnd("\"c))
+            Dim destinationFolder As String = Path.Combine(destinationDirectory, folderName)
 
-            If Directory.Exists(destFolder) Then
-                Using fMDlg As New FolderMergeDialog(folderName)
-                    Dim result = fMDlg.ShowDialog(Me)
+            If Directory.Exists(destinationFolder) Then
+                Using folderMergeDialog As New FolderMergeDialog(folderName)
+                    Dim result = folderMergeDialog.ShowDialog(Me)
                     If result = DialogResult.No Then
                         ' User chose not to merge folders.
                         Return
@@ -458,18 +472,84 @@ Public Class Form1
         ' - The user has confirmed any overwrites/merges.
         ' - We can safely start the non-blocking copy engine.
 
+        '  Disable the Start button and show a Cancel button.
+        btnStart.Enabled = False
+        btnCancel.Visible = True
+
         ' Create the engine and keep a reference so we can cancel later.
         engine = New CopyEngine()
 
         ' Start the copy on a background thread.
-        engine.StartCopy(src, dst)
+        engine.StartCopy(sourceDirectory, destinationDirectory)
 
         ' Show a modeless progress dialog that listens to engine events.
         ' This keeps the main form responsive, similar to Explorer.
-        Dim dlg As New CopyDialog(engine)
-        dlg.Show(Me)
+        Dim copyDialog As New CopyDialog(engine)
+        copyDialog.Show(Me)
 
     End Sub
+
+
+    ' ===============================
+    ' BLOCKING EXAMPLE (DO NOT USE)
+    ' ==============================
+
+    '' Synchronous, blocking example inside a button click handler
+
+    'Private Sub BtnStart_Click(sender As Object, e As EventArgs) _
+    '    Handles btnStart.Click
+
+    '    Dim sourceDirectory = txtSource.Text.Trim()
+    '    Dim destinationDirectory = txtDest.Text.Trim()
+
+    '    ' Quick validation omitted for brevity
+
+    '    If IO.File.Exists(sourceDirectory) Then
+
+    '        ' This call blocks the UI until the copy finishes
+    '        IO.File.Copy(sourceDirectory,
+    '                     IO.Path.Combine(destinationDirectory,
+    '                                     IO.Path.GetFileName(sourceDirectory)),
+    '                     True)
+
+    '    ElseIf IO.Directory.Exists(sourceDirectory) Then
+
+    '        ' Recursive synchronous copy — also blocks the UI
+    '        DirectoryCopy(sourceDirectory,
+    '                      IO.Path.Combine(destinationDirectory,
+    '                                      IO.Path.GetFileName(sourceDirectory)))
+
+    '    End If
+
+    '    MessageBox.Show("Copy finished") ' UI was frozen until this point
+
+    'End Sub
+
+    'Private Sub DirectoryCopy(sourceDirectory As String,
+    '                          destinationDirectory As String)
+
+    '    IO.Directory.CreateDirectory(destinationDirectory)
+
+    '    For Each file In IO.Directory.GetFiles(sourceDirectory)
+
+    '        IO.File.Copy(file,
+    '                     IO.Path.Combine(destinationDirectory,
+    '                                     IO.Path.GetFileName(file)),
+    '                     True)
+
+    '    Next
+
+    '    For Each directory In IO.Directory.GetDirectories(sourceDirectory)
+
+    '        ' Recursive call to copy subdirectories
+    '        DirectoryCopy(directory,
+    '                      IO.Path.Combine(destinationDirectory,
+    '                                      IO.Path.GetFileName(directory)))
+
+    '    Next
+
+    'End Sub
+
 
     '===============================
     '  WINDOWS 7 STYLE ERROR DIALOG
@@ -520,9 +600,9 @@ Public Class Form1
     '  CANCEL BUTTON (OPTIONAL)
     '===============================
     ' If you have a Cancel button on the main form, you can wire it like this:
-    'Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-    '    ' Cancel cooperatively: the engine checks for cancellation between file operations.
-    '    engine?.Cancel()
-    'End Sub
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+        ' Cancel cooperatively: the engine checks for cancellation between file operations.
+        engine?.Cancel()
+    End Sub
 
 End Class

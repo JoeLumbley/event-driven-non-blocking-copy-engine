@@ -13,6 +13,7 @@ Partial Class Form1
         Me.btnBrowseFile = New System.Windows.Forms.Button()
         Me.btnBrowseDest = New System.Windows.Forms.Button()
         Me.btnStart = New System.Windows.Forms.Button()
+        Me.btnCancel = New System.Windows.Forms.Button()
         Me.lblSource = New System.Windows.Forms.Label()
         Me.lblDest = New System.Windows.Forms.Label()
         Me.SuspendLayout()
@@ -67,6 +68,16 @@ Partial Class Form1
         Me.btnStart.Text = "Start Copy"
         Me.btnStart.UseVisualStyleBackColor = True
         '
+        'btnCancel
+        '
+        Me.btnCancel.Location = New System.Drawing.Point(345, 150)
+        Me.btnCancel.Name = "btnCancel"
+        Me.btnCancel.Size = New System.Drawing.Size(95, 30)
+        Me.btnCancel.TabIndex = 6
+        Me.btnCancel.Text = "Cancel"
+        Me.btnCancel.UseVisualStyleBackColor = True
+        Me.btnCancel.Visible = False
+        '
         'lblSource
         '
         Me.lblSource.AutoSize = True
@@ -115,6 +126,7 @@ Partial Class Form1
     Friend WithEvents btnBrowseFile As Button
     Friend WithEvents btnBrowseDest As Button
     Friend WithEvents btnStart As Button
+    Friend WithEvents btnCancel As Button
     Friend WithEvents lblSource As Label
     Friend WithEvents lblDest As Label
 
