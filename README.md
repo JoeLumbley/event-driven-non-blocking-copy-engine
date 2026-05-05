@@ -28,33 +28,66 @@
 **Problem:** this runs on the UI thread and blocks message processing while files copy.
 
 ```vbnet
-' Synchronous, blocking example inside a button click handler
-Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
-    Dim src = txtSource.Text.Trim()
-    Dim dst = txtDest.Text.Trim()
 
-    ' Quick validation omitted for brevity
 
-    If File.Exists(src) Then
-        ' This call blocks the UI until the copy finishes
-        File.Copy(src, Path.Combine(dst, Path.GetFileName(src)), True)
-    ElseIf Directory.Exists(src) Then
-        ' Recursive synchronous copy — also blocks the UI
-        DirectoryCopy(src, Path.Combine(dst, Path.GetFileName(src)))
-    End If
+    ' Synchronous, blocking example inside a button click handler
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) _
+        Handles btnStart.Click
 
-    MessageBox.Show("Copy finished") ' UI was frozen until this point
-End Sub
+        Dim sourceDirectory = txtSource.Text.Trim()
+        Dim destinationDirectory = txtDest.Text.Trim()
 
-Private Sub DirectoryCopy(sourceDir As String, destDir As String)
-    Directory.CreateDirectory(destDir)
-    For Each file In Directory.GetFiles(sourceDir)
-        File.Copy(file, Path.Combine(destDir, Path.GetFileName(file)), True)
-    Next
-    For Each dir In Directory.GetDirectories(sourceDir)
-        DirectoryCopy(dir, Path.Combine(destDir, Path.GetFileName(dir)))
-    Next
-End Sub
+        ' Quick validation omitted for brevity
+
+        If IO.File.Exists(sourceDirectory) Then
+
+            ' This call blocks the UI until the copy finishes
+            IO.File.Copy(sourceDirectory,
+                         IO.Path.Combine(destinationDirectory,
+                                         IO.Path.GetFileName(sourceDirectory)),
+                         True)
+
+        ElseIf IO.Directory.Exists(sourceDirectory) Then
+
+            ' Recursive synchronous copy — also blocks the UI
+            DirectoryCopy(sourceDirectory,
+                          IO.Path.Combine(destinationDirectory,
+                                          IO.Path.GetFileName(sourceDirectory)))
+
+        End If
+
+        MessageBox.Show("Copy finished") ' UI was frozen until this point
+
+    End Sub
+
+    Private Sub DirectoryCopy(sourceDirectory As String,
+                              destinationDirectory As String)
+
+        IO.Directory.CreateDirectory(destinationDirectory)
+
+        For Each file In IO.Directory.GetFiles(sourceDirectory)
+
+            IO.File.Copy(file,
+                         IO.Path.Combine(destinationDirectory,
+                                         IO.Path.GetFileName(file)),
+                         True)
+
+        Next
+
+        For Each directory In IO.Directory.GetDirectories(sourceDirectory)
+
+            ' Recursive call to copy subdirectories
+            DirectoryCopy(directory,
+                          IO.Path.Combine(destinationDirectory,
+                                          IO.Path.GetFileName(directory)))
+
+        Next
+
+    End Sub
+
+
+
+
 ```
 
 ---
