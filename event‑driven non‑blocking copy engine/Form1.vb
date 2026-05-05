@@ -2,14 +2,11 @@
 
 ' Form1 is the main window where the user chooses a source and destination,
 ' runs validation, and then starts the non-blocking copy engine.
+
 Public Class Form1
 
     ' Central copy engine instance so we can cancel or inspect it later.
     Private engine As CopyEngine
-
-    'AddHandler() engine.Completed, AddressOf OnCompleted
-
-
 
     ' List of protected system roots we never allow as a source.
     ' These are stored in lowercase without trailing backslashes for easier comparison.
@@ -421,17 +418,7 @@ Public Class Form1
         If Not btnStart.Enabled Then btnStart.Enabled = True
     End Sub
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        '' subscribe to copy engine cancelled/completed events if you want to re-enable the Start button or show a message box when done.
-        'AddHandler engine.Completed, AddressOf OnCompleted
-        'AddHandler engine.Cance, AddressOf OnCancelled
 
-    End Sub
 
-    Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
-        ' subscribe to copy engine cancelled/completed events if you want to re-enable the Start button or show a message box when done.
-        'AddHandler engine.Completed, AddressOf OnCompleted
-
-    End Sub
 End Class
