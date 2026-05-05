@@ -372,27 +372,12 @@ Public Class Form1
     '===============================
     '  CANCEL BUTTON
     '===============================
-    ' If you have a Cancel button on the main form, you can wire it like this:
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+
         ' Cancel cooperatively: the engine checks for cancellation between file operations.
         engine?.Cancel()
 
-        If btnCancel.Visible Then btnCancel.Visible = False
-        If Not btnStart.Enabled Then btnStart.Enabled = True
-
     End Sub
-
-    'Private Sub OnCancelled()
-    '    ' This event is raised when the engine finishes cancelling.
-    '    ' You can use it to re-enable the Start button or show a message box if you want.
-    '    If Me.InvokeRequired Then
-    '        Me.Invoke(New Action(AddressOf OnCancelled))
-    '        Return
-    '    End If
-    '    MessageBox.Show(Me, "Copy cancelled.", "Copy", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '    If btnCancel.Visible Then btnCancel.Visible = False
-    '    If Not btnStart.Enabled Then btnStart.Enabled = True
-    'End Sub
 
     Private Sub OnCompleted(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
         ' This event is raised when the engine finishes copying (either successfully, with skips/errors, or cancelled).
@@ -417,8 +402,5 @@ Public Class Form1
         If btnCancel.Visible Then btnCancel.Visible = False
         If Not btnStart.Enabled Then btnStart.Enabled = True
     End Sub
-
-
-
 
 End Class
