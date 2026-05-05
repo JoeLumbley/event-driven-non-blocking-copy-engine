@@ -36,6 +36,7 @@ End Class
 '===============================
 Public Class CopyEngine
 
+    ' Events
     Public Event ProgressChanged(info As CopyProgressInfo)
     Public Event ErrorOccurred(file As String, ex As Exception)
     Public Event Completed(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)

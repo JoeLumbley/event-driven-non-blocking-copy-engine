@@ -18,15 +18,17 @@ Public Class CopyDialog
         Me.engine = engine
         InitializeComponent()
 
+        ' Subscribe to engine events
         AddHandler engine.ProgressChanged, AddressOf OnProgressChanged
         AddHandler engine.Completed, AddressOf OnCompleted
         AddHandler engine.ErrorOccurred, AddressOf OnErrorOccurred
+
     End Sub
 
     Private Sub InitializeComponent()
         Me.Text = "Copying..."
         Me.Size = New Size(500, 250)
-        Me.StartPosition = FormStartPosition.CenterParent
+        Me.StartPosition = FormStartPosition.CenterScreen
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
@@ -88,6 +90,7 @@ Public Class CopyDialog
     End Sub
 
     Private Sub OnProgressChanged(info As CopyProgressInfo)
+
         If Me.InvokeRequired Then
             Me.Invoke(New Action(Of CopyProgressInfo)(AddressOf OnProgressChanged), info)
             Return
@@ -109,6 +112,7 @@ Public Class CopyDialog
         End If
 
         lblCurrent.Text = $"Current: {System.IO.Path.GetFileName(info.CurrentFile)}"
+
     End Sub
 
     Private Function FormatBytes(value As Long) As String
