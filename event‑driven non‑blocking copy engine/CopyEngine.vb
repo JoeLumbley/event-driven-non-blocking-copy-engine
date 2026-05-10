@@ -310,20 +310,66 @@ Public Class CopyEngine
     '===============================
     '  PROGRESS REPORTING
     '===============================
-    Private Sub ReportProgress(currentFile As String)
-        Dim percent As Integer = If(totalBytes > 0, CInt((bytesCopied * 100L) \ totalBytes), 0)
+    'Private Sub ReportProgress(currentFile As String)
+    '    Dim percent As Integer = If(totalBytes > 0, CInt((bytesCopied * 100L) \ totalBytes), 0)
 
+    '    Dim speed As Double = 0
+    '    Dim eta As TimeSpan = TimeSpan.Zero
+
+    '    If sw IsNot Nothing AndAlso sw.Elapsed.TotalSeconds > 0.1 Then
+    '        speed = bytesCopied / sw.Elapsed.TotalSeconds
+    '        Dim remaining As Long = totalBytes - bytesCopied
+    '        If speed > 0 Then
+    '            eta = TimeSpan.FromSeconds(remaining / speed)
+    '        End If
+    '    End If
+
+    '    Dim info As New CopyProgressInfo With {
+    '        .Percent = percent,
+    '        .BytesCopied = bytesCopied,
+    '        .TotalBytes = totalBytes,
+    '        .FilesDone = filesDone,
+    '        .TotalFiles = totalFiles,
+    '        .CurrentFile = currentFile,
+    '        .SpeedBytesPerSec = speed,
+    '        .Eta = eta
+    '    }
+
+    '    worker.ReportProgress(percent, info)
+    'End Sub
+
+
+    Private Sub ReportProgress(currentFile As String)
+
+        '----- SAFE PERCENT -----
+        Dim pct As Double
+
+        If totalBytes > 0 Then
+            pct = (CDbl(bytesCopied) / CDbl(totalBytes)) * 100.0
+        Else
+            pct = 0
+        End If
+
+        If Double.IsNaN(pct) OrElse Double.IsInfinity(pct) Then
+            pct = 0
+        End If
+
+        Dim percent As Integer = CInt(Math.Max(0, Math.Min(100, pct)))
+
+        '----- SPEED & ETA -----
         Dim speed As Double = 0
         Dim eta As TimeSpan = TimeSpan.Zero
 
         If sw IsNot Nothing AndAlso sw.Elapsed.TotalSeconds > 0.1 Then
             speed = bytesCopied / sw.Elapsed.TotalSeconds
+
             Dim remaining As Long = totalBytes - bytesCopied
             If speed > 0 Then
                 eta = TimeSpan.FromSeconds(remaining / speed)
             End If
         End If
 
+        '----- PACKAGE -----
         Dim info As New CopyProgressInfo With {
             .Percent = percent,
             .BytesCopied = bytesCopied,
@@ -337,6 +383,7 @@ Public Class CopyEngine
 
         worker.ReportProgress(percent, info)
     End Sub
+
 
     Private Sub worker_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles worker.ProgressChanged
         Dim info = DirectCast(e.UserState, CopyProgressInfo)

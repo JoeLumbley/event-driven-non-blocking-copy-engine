@@ -75,6 +75,7 @@ Public Class Form1
     '===============================
     '  START COPY (MAIN ENTRY POINT)
     '===============================
+
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         ' Read and trim user input.
@@ -98,13 +99,13 @@ Public Class Form1
 
         ' 1. Source must exist (either file or folder).
         If Not File.Exists(sourceDirectory) AndAlso Not Directory.Exists(sourceDirectory) Then
-            ShowValidationError("The source path does not exist." & vbCrLf & sourceDirectory)
+            ShowValidationError("The source path does not exist." & Environment.NewLine & sourceDirectory)
             Return
         End If
 
         ' 2. Destination must be an existing folder.
         If Not Directory.Exists(destinationDirectory) Then
-            ShowValidationError("The destination folder does not exist." & vbCrLf & destinationDirectory)
+            ShowValidationError("The destination folder does not exist." & Environment.NewLine & destinationDirectory)
             Return
         End If
 
@@ -209,30 +210,6 @@ Public Class Form1
             End If
         End If
 
-        ''===============================
-        ''  VALIDATION PASSED
-        ''===============================
-
-        '' At this point:
-        '' - The source and destination are valid.
-        '' - The user has confirmed any overwrites/merges.
-        '' - We can safely start the non-blocking copy engine.
-
-        ''  Disable the Start button and show a Cancel button.
-        'btnStart.Enabled = False
-        'btnCancel.Visible = True
-
-        '' Create the engine and keep a reference so we can cancel later.
-        'engine = New CopyEngine()
-
-        '' Start the copy on a background thread.
-        'engine.StartCopy(sourceDirectory, destinationDirectory)
-
-        '' Show a modeless progress dialog that listens to engine events.
-        '' This keeps the main form responsive, similar to Explorer.
-        'Dim copyDialog As New CopyDialog(engine)
-        'copyDialog.Show(Me)
-
         '===============================
         '  VALIDATION PASSED
         '===============================
@@ -258,7 +235,6 @@ Public Class Form1
         ' Show a modeless progress dialog that listens to engine events.
         Dim copyDialog As New CopyDialog(engine)
         copyDialog.Show(Me)
-
 
     End Sub
 
@@ -382,23 +358,26 @@ Public Class Form1
     Private Sub OnCompleted(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
         ' This event is raised when the engine finishes copying (either successfully, with skips/errors, or cancelled).
         ' You can use it to re-enable the Start button or show a message box if you want.
-        If Me.InvokeRequired Then
-            Me.Invoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf OnCompleted), success, hadSkips, hadErrors)
-            Return
-        End If
-        Dim msg As String
-        If Not success Then
-            msg = "Copy canceled."
-        ElseIf hadErrors OrElse hadSkips Then
-            msg = "Copy finished (some files were skipped or failed)."
-        Else
-            msg = "Copy finished successfully."
-        End If
-        MessageBox.Show(Me, msg, "Copy", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        If hadErrors OrElse hadSkips Then
-            Dim summary As New ErrorSummaryDialog(engine.ErrorList)
-            summary.ShowDialog(Me)
-        End If
+
+
+        'If Me.InvokeRequired Then
+        '    Me.Invoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf OnCompleted), success, hadSkips, hadErrors)
+        '    Return
+        'End If
+
+        'Dim msg As String
+        'If Not success Then
+        '    msg = "Copy canceled."
+        'ElseIf hadErrors OrElse hadSkips Then
+        '    msg = "Copy finished (some files were skipped or failed)."
+        'Else
+        '    msg = "Copy finished successfully."
+        'End If
+        'MessageBox.Show(Me, msg, "Copy", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        'If hadErrors OrElse hadSkips Then
+        '    Dim summary As New ErrorSummaryDialog(engine.ErrorList)
+        '    summary.ShowDialog(Me)
+        'End If
 
         ' Enable the Start button and hide the Cancel button
         If Not btnStart.Enabled Then btnStart.Enabled = True
