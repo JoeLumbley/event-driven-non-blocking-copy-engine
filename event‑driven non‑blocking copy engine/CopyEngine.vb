@@ -1,10 +1,6 @@
-﻿
-
-
-Imports System.ComponentModel
+﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Threading
-Imports System.Diagnostics
 
 '===============================
 '  SUPPORTING TYPES
@@ -37,6 +33,11 @@ End Class
 Public Class CopyEngine
 
     ' Events
+    ' These events are Public because they form the engine’s external contract.
+    ' The copy engine runs internally, but the UI (or any consumer) must be able
+    ' to subscribe to progress, errors, and completion signals. Exposing events
+    ' publicly keeps the BackgroundWorker encapsulated while still allowing the
+    ' outside world to react to what the engine is doing.
     Public Event ProgressChanged(info As CopyProgressInfo)
     Public Event ErrorOccurred(file As String, ex As Exception)
     Public Event Completed(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
