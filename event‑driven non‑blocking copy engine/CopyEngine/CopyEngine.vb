@@ -441,48 +441,48 @@ Public Class CopyProgressInfo
     Public Property Eta As TimeSpan
 End Class
 
-'===============================
-'  COPY POLICY
-'===============================
-Public Class CopyPolicy
-    Private pendingAction As CopyErrorAction?
-    Private ReadOnly actionEvent As New AutoResetEvent(False)
+''===============================
+''  COPY POLICY
+''===============================
+'Public Class CopyPolicy
+'    Private pendingAction As CopyErrorAction?
+'    Private ReadOnly actionEvent As New AutoResetEvent(False)
 
-    Public Sub SetAction(action As CopyErrorAction)
-        SyncLock Me
-            pendingAction = action
-        End SyncLock
-        actionEvent.Set()
-    End Sub
+'    Public Sub SetAction(action As CopyErrorAction)
+'        SyncLock Me
+'            pendingAction = action
+'        End SyncLock
+'        actionEvent.Set()
+'    End Sub
 
-    Public Function WaitForAction() As CopyErrorAction?
-        actionEvent.WaitOne()
-        SyncLock Me
-            Return pendingAction
-        End SyncLock
-    End Function
-End Class
+'    Public Function WaitForAction() As CopyErrorAction?
+'        actionEvent.WaitOne()
+'        SyncLock Me
+'            Return pendingAction
+'        End SyncLock
+'    End Function
+'End Class
 
-'===============================
-'  PROGRESS THROTTLER
-'===============================
-Public Class ProgressThrottler
-    Private lastUpdate As DateTime = DateTime.MinValue
-    Private ReadOnly intervalMs As Integer
+''===============================
+''  PROGRESS THROTTLER
+''===============================
+'Public Class ProgressThrottler
+'    Private lastUpdate As DateTime = DateTime.MinValue
+'    Private ReadOnly intervalMs As Integer
 
-    Public Sub New(Optional intervalMilliseconds As Integer = 200)
-        intervalMs = Math.Max(50, intervalMilliseconds)
-    End Sub
+'    Public Sub New(Optional intervalMilliseconds As Integer = 200)
+'        intervalMs = Math.Max(50, intervalMilliseconds)
+'    End Sub
 
-    Public Function ShouldReport() As Boolean
-        Dim now = DateTime.UtcNow
-        If (now - lastUpdate).TotalMilliseconds >= intervalMs Then
-            lastUpdate = now
-            Return True
-        End If
-        Return False
-    End Function
-End Class
+'    Public Function ShouldReport() As Boolean
+'        Dim now = DateTime.UtcNow
+'        If (now - lastUpdate).TotalMilliseconds >= intervalMs Then
+'            lastUpdate = now
+'            Return True
+'        End If
+'        Return False
+'    End Function
+'End Class
 
 '===============================
 '  COPY ENGINE
