@@ -390,13 +390,19 @@
 Imports System.IO
 Imports System.Windows.Forms
 
+' Form1 is the main window where the user chooses a source and destination,
+' runs validation, and then starts the non-blocking copy engine.
+
 Public Class Form1
 
+    ' Central copy engine instance so we can cancel or inspect it later.
     Private engine As CopyEngine
 
     '===============================
     '  BROWSE BUTTONS
     '===============================
+
+    ' Lets the user pick a folder as the source.
     Private Sub btnBrowseSource_Click(sender As Object, e As EventArgs) Handles btnBrowseSource.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
@@ -405,6 +411,7 @@ Public Class Form1
         End Using
     End Sub
 
+    ' Lets the user pick a single file as the source.
     Private Sub btnBrowseFile_Click(sender As Object, e As EventArgs) Handles btnBrowseFile.Click
         Using f As New OpenFileDialog()
             f.Title = "Select a file to copy"
@@ -416,6 +423,7 @@ Public Class Form1
         End Using
     End Sub
 
+    ' Lets the user pick the destination folder.
     Private Sub btnBrowseDest_Click(sender As Object, e As EventArgs) Handles btnBrowseDest.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
@@ -437,6 +445,15 @@ Public Class Form1
         If Not validation.Success Then
             Return
         End If
+
+        '===============================
+        '  VALIDATION PASSED
+        '===============================
+
+        ' At this point:
+        ' - The source and destination are valid.
+        ' - The user has confirmed any overwrites/merges.
+        ' - We can safely start the non-blocking copy engine.
 
         sourceDirectory = validation.SourcePath
         destinationDirectory = validation.DestinationPath

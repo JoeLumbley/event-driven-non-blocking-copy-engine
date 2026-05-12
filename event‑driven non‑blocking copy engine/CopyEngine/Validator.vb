@@ -10,6 +10,8 @@ End Class
 
 Public Class Validator
 
+    ' List of protected system roots we never allow as a source.
+    ' These are stored in lowercase without trailing backslashes for easier comparison.
     Private Shared ReadOnly ProtectedRoots As String() = {
         "c:\windows",
         "c:\windows\system32",
@@ -48,9 +50,11 @@ Public Class Validator
             .DestinationPath = rawDest
         }
 
+        ' Read and trim user input.
         Dim sourceDirectory As String = rawSource.Trim()
         Dim destinationDirectory As String = rawDest.Trim()
 
+        ' Quick sanity checks for empty fields.
         If String.IsNullOrWhiteSpace(sourceDirectory) Then
             ShowValidationError(owner, "Please select a source file or folder.")
             Return result
@@ -60,6 +64,10 @@ Public Class Validator
             ShowValidationError(owner, "Please select a destination folder.")
             Return result
         End If
+
+        '===============================
+        '  VALIDATION
+        '===============================
 
         ' 1. Source must exist (either file or folder).
         If Not File.Exists(sourceDirectory) AndAlso Not Directory.Exists(sourceDirectory) Then
@@ -126,6 +134,10 @@ Public Class Validator
 
         End If
 
+        '===============================
+        '  OVERWRITE / MERGE PROMPTS
+        '===============================
+
         ' 7. File-level overwrite warning (single file copy).
         If File.Exists(sourceDirectory) Then
             Dim fileName As String = Path.GetFileName(sourceDirectory)
@@ -163,6 +175,14 @@ Public Class Validator
                 End Using
             End If
         End If
+
+        '===============================
+        '  VALIDATION PASSED
+        '===============================
+
+        ' At this point:
+        ' - The source and destination are valid.
+        ' - The user has confirmed any overwrites/merges.
 
         ' All good
         result.Success = True
