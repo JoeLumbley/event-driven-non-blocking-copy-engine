@@ -190,7 +190,6 @@ Public Class ValidationEngine
         Return False
     End Function
 
-
     Public Sub RunTests()
 
         Debug.WriteLine("Running tests...")
@@ -202,8 +201,6 @@ Public Class ValidationEngine
         Debug.WriteLine("All tests executed.")
 
     End Sub
-
-
 
     Private Sub TestIsProtectedPath()
 
@@ -376,24 +373,6 @@ Public Class ValidationEngine
         AssertFalse(o.IsValid, "Cannot copy file over folder")
 
     End Sub
-    'Private Sub TestValidate_OverwritePrompt()
-
-    '    Dim root = Path.Combine(Path.GetTempPath(), "OverwriteTest")
-    '    Directory.CreateDirectory(root)
-
-    '    Dim src = Path.Combine(root, "File.txt")
-    '    File.WriteAllText(src, "A")
-
-    '    Dim destFolder = Path.Combine(root, "Dest")
-    '    Directory.CreateDirectory(destFolder)
-
-    '    Dim destFile = Path.Combine(destFolder, "File.txt")
-    '    File.WriteAllText(destFile, "B")
-
-    '    Dim o = ValidationEngine.ValidatePaths(src, destFolder)
-    '    AssertTrue(o.RequiresFileOverwritePrompt, "Overwrite prompt should be required")
-
-    'End Sub
 
     Private Sub TestValidate_OverwritePrompt()
 
@@ -415,24 +394,6 @@ Public Class ValidationEngine
 
     End Sub
 
-    'Private Sub TestValidate_MergePrompt()
-
-    '    Dim root = Path.Combine(Path.GetTempPath(), "MergeTest")
-    '    Directory.CreateDirectory(root)
-
-    '    Dim src = Path.Combine(root, "FolderA")
-    '    Directory.CreateDirectory(src)
-
-    '    Dim dest = Path.Combine(root, "Dest")
-    '    Directory.CreateDirectory(dest)
-
-    '    Dim destChild = Path.Combine(dest, "FolderA")
-    '    Directory.CreateDirectory(destChild)
-
-    '    Dim o = ValidationEngine.ValidatePaths(src, dest)
-    '    AssertTrue(o.RequiresFolderMergePrompt, "Merge prompt should be required")
-
-    'End Sub
     Private Sub TestValidate_MergePrompt()
 
         Dim userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
@@ -452,8 +413,6 @@ Public Class ValidationEngine
         AssertTrue(o.RequiresFolderMergePrompt, "Merge prompt should be required")
 
     End Sub
-
-
 
     Private Sub AssertTrue(condition As Boolean, message As String)
         Debug.Assert(condition, message)

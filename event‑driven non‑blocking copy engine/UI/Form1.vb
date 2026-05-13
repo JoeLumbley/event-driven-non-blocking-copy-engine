@@ -135,13 +135,13 @@ Public Class Form1
 
     Private Sub Form1_Shown(sender As Object, e As EventArgs) Handles Me.Shown
         If Debugger.IsAttached Then
+
             ' Run validation engine tests when the form is shown.
             Dim validator As New ValidationEngine()
 
             validator.RunTests()
 
         End If
-
 
     End Sub
 
