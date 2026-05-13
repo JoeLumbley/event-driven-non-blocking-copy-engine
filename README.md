@@ -107,8 +107,6 @@
 
 Imports System.ComponentModel
 Imports System.IO
-Imports System.Threading
-Imports System.Diagnostics
 
 '===============================
 '  SUPPORTING TYPES
@@ -141,17 +139,22 @@ End Class
 Public Class CopyEngine
 
     ' Events
+    ' These events are Public because they form the engine’s external contract.
+    ' The copy engine runs internally, but the UI (or any consumer) must be able
+    ' to subscribe to progress, errors, and completion signals. Exposing events
+    ' publicly keeps the BackgroundWorker encapsulated while still allowing the
+    ' outside world to react to what the engine is doing.
     Public Event ProgressChanged(info As CopyProgressInfo)
     Public Event ErrorOccurred(file As String, ex As Exception)
     Public Event Completed(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
 
-    Private WithEvents worker As New BackgroundWorker With {
+    Private WithEvents Worker As New BackgroundWorker With {
         .WorkerReportsProgress = True,
         .WorkerSupportsCancellation = True
     }
 
     Private sourcePath As String
-    Private destPath As String
+    Private destinationPath As String
 
     Private files As List(Of String)
     Private folders As List(Of String)
@@ -166,11 +169,10 @@ Public Class CopyEngine
     Private hadSkips As Boolean = False
     Private hadErrors As Boolean = False
 
-    Private pendingAction As CopyErrorAction? = Nothing
-    Private actionReceived As New AutoResetEvent(False)
-
-    Private errors As New List(Of CopyErrorEntry)
+    Private ReadOnly policy As New CopyPolicy()
+    Private ReadOnly errors As New List(Of CopyErrorEntry)
     Private sw As Stopwatch
+    Private ReadOnly throttler As New ProgressThrottler(200)
 
     Private rootFolderName As String = ""
 
@@ -184,13 +186,13 @@ Public Class CopyEngine
     '  START COPY
     '===============================
     Public Sub StartCopy(source As String, dest As String)
+
         sourcePath = source.TrimEnd("\"c)
-        destPath = dest.TrimEnd("\"c)
+        destinationPath = dest.TrimEnd("\"c)
 
         skipAll = False
         hadSkips = False
         hadErrors = False
-        pendingAction = Nothing
         errors.Clear()
         bytesCopied = 0
         filesDone = 0
@@ -218,18 +220,18 @@ Public Class CopyEngine
         End If
 
         sw = Stopwatch.StartNew()
-        worker.RunWorkerAsync()
+        Worker.RunWorkerAsync()
+
     End Sub
 
     Public Sub Cancel()
-        If worker.IsBusy Then
-            worker.CancelAsync()
+        If Worker.IsBusy Then
+            Worker.CancelAsync()
         End If
     End Sub
 
     Public Sub SetErrorAction(action As CopyErrorAction)
-        pendingAction = action
-        actionReceived.Set()
+        policy.SetAction(action)
     End Sub
 
     '===============================
@@ -244,11 +246,11 @@ Public Class CopyEngine
     End Sub
 
     Private Sub ScanFolderSafe(folder As String)
+
         ' Record this folder
         folders.Add(folder)
 
-        Dim subFiles As String() = {}
-        Dim subDirs As String() = {}
+        Dim subFiles As String()
 
         ' Files
         Try
@@ -272,6 +274,8 @@ Public Class CopyEngine
             End Try
         Next
 
+        Dim subDirs As String()
+
         ' Subdirectories
         Try
             subDirs = Directory.GetDirectories(folder)
@@ -292,14 +296,15 @@ Public Class CopyEngine
     '===============================
     '  WORKER THREAD
     '===============================
-    Private Sub worker_DoWork(sender As Object, e As DoWorkEventArgs) Handles worker.DoWork
+    Private Sub worker_DoWork(sender As Object, e As DoWorkEventArgs) Handles Worker.DoWork
+
         Dim buffer(64 * 1024 - 1) As Byte
 
         ' Create all folders first (for folder copies)
         If rootFolderName <> "" Then
             For Each folder In folders
                 Dim relative = folder.Substring(sourcePath.Length).TrimStart("\"c)
-                Dim targetFolder = Path.Combine(destPath, rootFolderName, relative)
+                Dim targetFolder = Path.Combine(destinationPath, rootFolderName, relative)
 
                 Try
                     Directory.CreateDirectory(targetFolder)
@@ -316,7 +321,7 @@ Public Class CopyEngine
         ' Copy files
         For Each file In files
 
-            If worker.CancellationPending Then
+            If Worker.CancellationPending Then
                 e.Cancel = True
                 Return
             End If
@@ -325,22 +330,22 @@ Public Class CopyEngine
 
             If rootFolderName = "" Then
                 ' SINGLE FILE
-                target = Path.Combine(destPath, Path.GetFileName(file))
+                target = Path.Combine(destinationPath, Path.GetFileName(file))
             Else
                 ' FOLDER COPY
                 Dim relative = file.Substring(sourcePath.Length).TrimStart("\"c)
-                target = Path.Combine(destPath, rootFolderName, relative)
+                target = Path.Combine(destinationPath, rootFolderName, relative)
             End If
 
             Try
                 Directory.CreateDirectory(Path.GetDirectoryName(target))
 
-                Using src As New FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read)
+                Using src As New FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
                     Using dst As New FileStream(target, FileMode.Create, FileAccess.Write, FileShare.None)
 
                         Dim read As Integer
                         Do
-                            If worker.CancellationPending Then
+                            If Worker.CancellationPending Then
                                 e.Cancel = True
                                 Return
                             End If
@@ -351,7 +356,9 @@ Public Class CopyEngine
                             dst.Write(buffer, 0, read)
                             bytesCopied += read
 
-                            ReportProgress(file)
+                            If throttler.ShouldReport() Then
+                                ReportProgress(file)
+                            End If
                         Loop
 
                     End Using
@@ -390,9 +397,9 @@ Public Class CopyEngine
 
                 RaiseEvent ErrorOccurred(file, ex)
 
-                actionReceived.WaitOne()
+                Dim action = policy.WaitForAction()
 
-                Select Case pendingAction
+                Select Case action
                     Case CopyErrorAction.Skip
                         hadSkips = True
                         errors.Add(New CopyErrorEntry With {.FilePath = file, .Message = ex.Message})
@@ -415,19 +422,36 @@ Public Class CopyEngine
     '  PROGRESS REPORTING
     '===============================
     Private Sub ReportProgress(currentFile As String)
-        Dim percent As Integer = If(totalBytes > 0, CInt((bytesCopied * 100L) \ totalBytes), 0)
 
+        '----- SAFE PERCENT -----
+        Dim pct As Double
+
+        If totalBytes > 0 Then
+            pct = (CDbl(bytesCopied) / CDbl(totalBytes)) * 100.0
+        Else
+            pct = 0
+        End If
+
+        If Double.IsNaN(pct) OrElse Double.IsInfinity(pct) Then
+            pct = 0
+        End If
+
+        Dim percent As Integer = CInt(Math.Max(0, Math.Min(100, pct)))
+
+        '----- SPEED & ETA -----
         Dim speed As Double = 0
         Dim eta As TimeSpan = TimeSpan.Zero
 
         If sw IsNot Nothing AndAlso sw.Elapsed.TotalSeconds > 0.1 Then
             speed = bytesCopied / sw.Elapsed.TotalSeconds
+
             Dim remaining As Long = totalBytes - bytesCopied
             If speed > 0 Then
                 eta = TimeSpan.FromSeconds(remaining / speed)
             End If
         End If
 
+        '----- PACKAGE -----
         Dim info As New CopyProgressInfo With {
             .Percent = percent,
             .BytesCopied = bytesCopied,
@@ -439,10 +463,10 @@ Public Class CopyEngine
             .Eta = eta
         }
 
-        worker.ReportProgress(percent, info)
+        Worker.ReportProgress(percent, info)
     End Sub
 
-    Private Sub worker_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles worker.ProgressChanged
+    Private Sub worker_ProgressChanged(sender As Object, e As ProgressChangedEventArgs) Handles Worker.ProgressChanged
         Dim info = DirectCast(e.UserState, CopyProgressInfo)
         RaiseEvent ProgressChanged(info)
     End Sub
@@ -450,7 +474,7 @@ Public Class CopyEngine
     '===============================
     '  COMPLETION
     '===============================
-    Private Sub worker_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles worker.RunWorkerCompleted
+    Private Sub worker_RunWorkerCompleted(sender As Object, e As RunWorkerCompletedEventArgs) Handles Worker.RunWorkerCompleted
         sw?.Stop()
 
         If e.Cancelled Then
