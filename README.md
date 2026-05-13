@@ -26,7 +26,7 @@
 ---
 
 
-### Before — blocking copy (what freezes the UI)
+### Before - blocking copy (what freezes the UI)
 
 **Problem:** this runs on the UI thread and blocks message processing while files copy.
 
@@ -95,7 +95,7 @@
 
 ---
 
-### After — non‑blocking, event‑driven copy (UI stays responsive)
+### After - non‑blocking, event‑driven copy (UI stays responsive)
 
 **Approach:** start the copy engine from the UI thread, subscribe to its events, and update the UI only from the UI thread. The engine does the heavy work on a background thread.
 
