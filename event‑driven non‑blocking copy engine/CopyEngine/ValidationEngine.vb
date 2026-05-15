@@ -310,22 +310,22 @@ Public Class ValidationEngine
 
         Dim o
 
-        o = ValidationEngine.ValidatePaths("", "C:\Dest")
+        o = ValidatePaths("", "C:\Dest")
         AssertFalse(o.IsValid, "Empty source should fail")
 
-        o = ValidationEngine.ValidatePaths("C:\Source", "")
+        o = ValidatePaths("C:\Source", "")
         AssertFalse(o.IsValid, "Empty destination should fail")
 
     End Sub
     Private Sub TestValidate_SourceMustExist()
 
-        Dim o = ValidationEngine.ValidatePaths("C:\DefinitelyDoesNotExist_123", "C:\Windows")
+        Dim o = ValidatePaths("C:\DefinitelyDoesNotExist_123", "C:\Windows")
         AssertFalse(o.IsValid, "Nonexistent source should fail")
 
     End Sub
     Private Sub TestValidate_DestinationMustExist()
 
-        Dim o = ValidationEngine.ValidatePaths("C:\Windows", "C:\Nope_123")
+        Dim o = ValidatePaths("C:\Windows", "C:\Nope_123")
         AssertFalse(o.IsValid, "Nonexistent destination should fail")
 
     End Sub
@@ -334,7 +334,7 @@ Public Class ValidationEngine
         Dim tempFile = Path.GetTempFileName()
         Dim tempFile2 = Path.GetTempFileName()
 
-        Dim o = ValidationEngine.ValidatePaths(tempFile, tempFile2)
+        Dim o = ValidatePaths(tempFile, tempFile2)
         AssertFalse(o.IsValid, "File → file is invalid; destination must be folder")
 
     End Sub
@@ -348,10 +348,10 @@ Public Class ValidationEngine
 
         Dim o
 
-        o = ValidationEngine.ValidatePaths(root, root)
+        o = ValidatePaths(root, root)
         AssertFalse(o.IsValid, "Cannot copy folder into itself")
 
-        o = ValidationEngine.ValidatePaths(root, sub1)
+        o = ValidatePaths(root, sub1)
         AssertFalse(o.IsValid, "Cannot copy folder into its subfolder")
 
     End Sub
@@ -369,7 +369,7 @@ Public Class ValidationEngine
         Dim folderWithSameName = Path.Combine(folderDest, "Item")
         Directory.CreateDirectory(folderWithSameName)
 
-        Dim o = ValidationEngine.ValidatePaths(fileSrc, folderDest)
+        Dim o = ValidatePaths(fileSrc, folderDest)
         AssertFalse(o.IsValid, "Cannot copy file over folder")
 
     End Sub
@@ -389,7 +389,7 @@ Public Class ValidationEngine
         Dim destFile = Path.Combine(destFolder, "File.txt")
         File.WriteAllText(destFile, "B")
 
-        Dim o = ValidationEngine.ValidatePaths(src, destFolder)
+        Dim o = ValidatePaths(src, destFolder)
         AssertTrue(o.RequiresFileOverwritePrompt, "Overwrite prompt should be required")
 
     End Sub
@@ -409,7 +409,7 @@ Public Class ValidationEngine
         Dim destChild = Path.Combine(dest, "FolderA")
         Directory.CreateDirectory(destChild)
 
-        Dim o = ValidationEngine.ValidatePaths(src, dest)
+        Dim o = ValidatePaths(src, dest)
         AssertTrue(o.RequiresFolderMergePrompt, "Merge prompt should be required")
 
     End Sub

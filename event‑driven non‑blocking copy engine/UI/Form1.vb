@@ -73,6 +73,7 @@ Public Class Form1
     '===============================
     '  START COPY (MAIN ENTRY POINT)
     '===============================
+
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         Dim sourceDirectory As String = txtSource.Text
@@ -113,6 +114,67 @@ Public Class Form1
         copyDialog.Show(Me)
 
     End Sub
+
+
+    '===============================
+    '  SYNCHRONOUS, BLOCKING EXAMPLE (TO COMPARE WITH NON-BLOCKING) 
+    '===============================
+
+
+    ' Synchronous, blocking example inside a button click handler
+    'Private Sub BtnStart_Click(sender As Object, e As EventArgs) _
+    '    Handles btnStart.Click
+
+    '    Dim sourceDirectory = txtSource.Text.Trim()
+    '    Dim destinationDirectory = txtDest.Text.Trim()
+
+    '    ' Quick validation omitted for brevity
+
+    '    If IO.File.Exists(sourceDirectory) Then
+
+    '        ' This call blocks the UI until the copy finishes
+    '        IO.File.Copy(sourceDirectory,
+    '                     IO.Path.Combine(destinationDirectory,
+    '                                     IO.Path.GetFileName(sourceDirectory)),
+    '                     True)
+
+    '    ElseIf IO.Directory.Exists(sourceDirectory) Then
+
+    '        ' Recursive synchronous copy — also blocks the UI
+    '        DirectoryCopy(sourceDirectory,
+    '                      IO.Path.Combine(destinationDirectory,
+    '                                      IO.Path.GetFileName(sourceDirectory)))
+
+    '    End If
+
+    '    MessageBox.Show("Copy finished") ' UI was frozen until this point
+
+    'End Sub
+
+    'Private Sub DirectoryCopy(sourceDirectory As String,
+    '                          destinationDirectory As String)
+
+    '    IO.Directory.CreateDirectory(destinationDirectory)
+
+    '    For Each file In IO.Directory.GetFiles(sourceDirectory)
+
+    '        IO.File.Copy(file,
+    '                     IO.Path.Combine(destinationDirectory,
+    '                                     IO.Path.GetFileName(file)),
+    '                     True)
+
+    '    Next
+
+    '    For Each directory In IO.Directory.GetDirectories(sourceDirectory)
+
+    '        ' Recursive call to copy subdirectories
+    '        DirectoryCopy(directory,
+    '                      IO.Path.Combine(destinationDirectory,
+    '                                      IO.Path.GetFileName(directory)))
+
+    '    Next
+
+    'End Sub
 
     '===============================
     '  CANCEL BUTTON
