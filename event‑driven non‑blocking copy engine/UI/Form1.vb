@@ -311,7 +311,10 @@ Public Class Form1
 
     Private Sub OnCompleted(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
 
+        ' Ensure we're on the UI thread before updating controls
         If Me.InvokeRequired Then
+            ' Marshal back to the UI thread if necessary
+            ' Capture the parameters in a lambda to avoid issues with closure and threading
             Me.Invoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf OnCompleted), success, hadSkips, hadErrors)
             Return
         End If
