@@ -311,13 +311,22 @@ Public Class Form1
 
     Private Sub OnCompleted(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
 
-        ' Ensure we're on the UI thread before updating controls
+        ' Ensure we're on the UI thread before updating controls or showing message boxes.
         If Me.InvokeRequired Then
-            ' Marshal back to the UI thread if necessary
-            ' Capture the parameters in a lambda to avoid issues with closure and threading
+            ' We are on a background thread, so we need to marshal back to the UI thread.
+
+            ' This ensures that the UI updates happen on the correct thread and that we don't run into cross-thread
+            ' operation exceptions.
+
+            ' The lambda captures the success, hadSkips, and hadErrors parameters and passes them to the OnCompleted
+            ' method when invoked on the UI thread.
             Me.Invoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf OnCompleted), success, hadSkips, hadErrors)
-            Return
+
+            Return ' Exit the current call since the UI thread will handle the rest
+
         End If
+
+        ' We are now on the UI thread, so we can safely update the UI controls without worrying about cross-thread exceptions.
 
         ' Unsubscribe for safety
         If engine IsNot Nothing Then
