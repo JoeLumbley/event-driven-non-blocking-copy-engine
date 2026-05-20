@@ -25,6 +25,16 @@
 
 ---
 
+### Key points 
+
+- **What blocks:** any long synchronous call on the UI thread (file I/O, heavy loops, network calls).  
+- **Why non‑blocking matters:** the UI thread must keep processing messages so the app remains responsive.  
+- **How to avoid blocking:** run long work on background threads or use asynchronous APIs; report progress via events or callbacks; marshal UI updates back to the UI thread with `Invoke`/`BeginInvoke`.  
+- **Where decisions belong:** do quick validations and user confirmations on the UI thread before starting the engine; let the engine handle runtime conflicts and report them via events.  
+- **Cancellation:** provide a `Cancel` method and check for cancellation inside the engine so long operations stop cooperatively.
+
+---
+
 
 ### Before - blocking copy (what freezes the UI)
 
@@ -493,15 +503,6 @@ End Class
 
 ---
 
-### Key points for beginners
-
-- **What blocks:** any long synchronous call on the UI thread (file I/O, heavy loops, network calls).  
-- **Why non‑blocking matters:** the UI thread must keep processing messages so the app remains responsive.  
-- **How to avoid blocking:** run long work on background threads or use asynchronous APIs; report progress via events or callbacks; marshal UI updates back to the UI thread with `Invoke`/`BeginInvoke`.  
-- **Where decisions belong:** do quick validations and user confirmations on the UI thread before starting the engine; let the engine handle runtime conflicts and report them via events.  
-- **Cancellation:** provide a `Cancel` method and check for cancellation inside the engine so long operations stop cooperatively.
-
----
 
 ### Small checklist to convert a blocking operation to non‑blocking
 
