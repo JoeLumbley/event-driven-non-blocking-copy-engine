@@ -7,125 +7,125 @@ Partial Class Form1
 
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.txtSource = New System.Windows.Forms.TextBox()
-        Me.txtDest = New System.Windows.Forms.TextBox()
-        Me.btnBrowseSource = New System.Windows.Forms.Button()
-        Me.btnBrowseFile = New System.Windows.Forms.Button()
-        Me.btnBrowseDest = New System.Windows.Forms.Button()
-        Me.btnStart = New System.Windows.Forms.Button()
-        Me.btnCancel = New System.Windows.Forms.Button()
-        Me.lblSource = New System.Windows.Forms.Label()
-        Me.lblDest = New System.Windows.Forms.Label()
-        Me.SuspendLayout()
-        '
-        'txtSource
-        '
-        Me.txtSource.Location = New System.Drawing.Point(15, 35)
-        Me.txtSource.Name = "txtSource"
-        Me.txtSource.Size = New System.Drawing.Size(360, 23)
-        Me.txtSource.TabIndex = 0
-        '
-        'txtDest
-        '
-        Me.txtDest.Location = New System.Drawing.Point(15, 105)
-        Me.txtDest.Name = "txtDest"
-        Me.txtDest.Size = New System.Drawing.Size(360, 23)
-        Me.txtDest.TabIndex = 1
-        '
-        'btnBrowseSource
-        '
-        Me.btnBrowseSource.Location = New System.Drawing.Point(385, 35)
-        Me.btnBrowseSource.Name = "btnBrowseSource"
-        Me.btnBrowseSource.Size = New System.Drawing.Size(75, 23)
-        Me.btnBrowseSource.TabIndex = 2
-        Me.btnBrowseSource.Text = "Folder..."
-        Me.btnBrowseSource.UseVisualStyleBackColor = True
-        '
-        'btnBrowseFile
-        '
-        Me.btnBrowseFile.Location = New System.Drawing.Point(465, 35)
-        Me.btnBrowseFile.Name = "btnBrowseFile"
-        Me.btnBrowseFile.Size = New System.Drawing.Size(75, 23)
-        Me.btnBrowseFile.TabIndex = 3
-        Me.btnBrowseFile.Text = "File..."
-        Me.btnBrowseFile.UseVisualStyleBackColor = True
-        '
-        'btnBrowseDest
-        '
-        Me.btnBrowseDest.Location = New System.Drawing.Point(385, 105)
-        Me.btnBrowseDest.Name = "btnBrowseDest"
-        Me.btnBrowseDest.Size = New System.Drawing.Size(75, 23)
-        Me.btnBrowseDest.TabIndex = 4
-        Me.btnBrowseDest.Text = "Browse..."
-        Me.btnBrowseDest.UseVisualStyleBackColor = True
-        '
-        'btnStart
-        '
-        Me.btnStart.Location = New System.Drawing.Point(445, 150)
-        Me.btnStart.Name = "btnStart"
-        Me.btnStart.Size = New System.Drawing.Size(95, 30)
-        Me.btnStart.TabIndex = 5
-        Me.btnStart.Text = "Start Copy"
-        Me.btnStart.UseVisualStyleBackColor = True
-        '
-        'btnCancel
-        '
-        Me.btnCancel.Location = New System.Drawing.Point(345, 150)
-        Me.btnCancel.Name = "btnCancel"
-        Me.btnCancel.Size = New System.Drawing.Size(95, 30)
-        Me.btnCancel.TabIndex = 6
-        Me.btnCancel.Text = "Cancel"
-        Me.btnCancel.UseVisualStyleBackColor = True
-        Me.btnCancel.Visible = False
-        '
-        'lblSource
-        '
-        Me.lblSource.AutoSize = True
-        Me.lblSource.Location = New System.Drawing.Point(12, 15)
-        Me.lblSource.Name = "lblSource"
-        Me.lblSource.Size = New System.Drawing.Size(82, 15)
-        Me.lblSource.TabIndex = 6
-        Me.lblSource.Text = "Source Path:"
-        '
-        'lblDest
-        '
-        Me.lblDest.AutoSize = True
-        Me.lblDest.Location = New System.Drawing.Point(12, 85)
-        Me.lblDest.Name = "lblDest"
-        Me.lblDest.Size = New System.Drawing.Size(113, 15)
-        Me.lblDest.TabIndex = 7
-        Me.lblDest.Text = "Destination Folder:"
-        '
-        'Form1
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(560, 200)
-        Me.Controls.Add(Me.lblDest)
-        Me.Controls.Add(Me.lblSource)
-        Me.Controls.Add(Me.btnStart)
-        Me.Controls.Add(Me.btnBrowseDest)
-        Me.Controls.Add(Me.btnBrowseFile)
-        Me.Controls.Add(Me.btnBrowseSource)
-        Me.Controls.Add(Me.txtDest)
-        Me.Controls.Add(Me.txtSource)
-        Me.Controls.Add(Me.btnCancel)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
-        Me.Name = "Form1"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "File Copy Launcher"
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
+        txtSource = New TextBox()
+        txtDestination = New TextBox()
+        btnBrowseFolderSource = New Button()
+        btnBrowseFileSource = New Button()
+        btnBrowseDestination = New Button()
+        btnStart = New Button()
+        btnCancel = New Button()
+        lblSource = New Label()
+        lblDest = New Label()
+        SuspendLayout()
+        ' 
+        ' txtSource
+        ' 
+        txtSource.Location = New Point(15, 35)
+        txtSource.Name = "txtSource"
+        txtSource.Size = New Size(360, 23)
+        txtSource.TabIndex = 0
+        ' 
+        ' txtDestination
+        ' 
+        txtDestination.Location = New Point(15, 105)
+        txtDestination.Name = "txtDestination"
+        txtDestination.Size = New Size(360, 23)
+        txtDestination.TabIndex = 1
+        ' 
+        ' btnBrowseFolderSource
+        ' 
+        btnBrowseFolderSource.Location = New Point(385, 35)
+        btnBrowseFolderSource.Name = "btnBrowseFolderSource"
+        btnBrowseFolderSource.Size = New Size(75, 23)
+        btnBrowseFolderSource.TabIndex = 2
+        btnBrowseFolderSource.Text = "Folder..."
+        btnBrowseFolderSource.UseVisualStyleBackColor = True
+        ' 
+        ' btnBrowseFileSource
+        ' 
+        btnBrowseFileSource.Location = New Point(465, 35)
+        btnBrowseFileSource.Name = "btnBrowseFileSource"
+        btnBrowseFileSource.Size = New Size(75, 23)
+        btnBrowseFileSource.TabIndex = 3
+        btnBrowseFileSource.Text = "File..."
+        btnBrowseFileSource.UseVisualStyleBackColor = True
+        ' 
+        ' btnBrowseDestination
+        ' 
+        btnBrowseDestination.Location = New Point(385, 105)
+        btnBrowseDestination.Name = "btnBrowseDestination"
+        btnBrowseDestination.Size = New Size(75, 23)
+        btnBrowseDestination.TabIndex = 4
+        btnBrowseDestination.Text = "Browse..."
+        btnBrowseDestination.UseVisualStyleBackColor = True
+        ' 
+        ' btnStart
+        ' 
+        btnStart.Location = New Point(445, 150)
+        btnStart.Name = "btnStart"
+        btnStart.Size = New Size(95, 30)
+        btnStart.TabIndex = 5
+        btnStart.Text = "Start Copy"
+        btnStart.UseVisualStyleBackColor = True
+        ' 
+        ' btnCancel
+        ' 
+        btnCancel.Location = New Point(345, 150)
+        btnCancel.Name = "btnCancel"
+        btnCancel.Size = New Size(95, 30)
+        btnCancel.TabIndex = 6
+        btnCancel.Text = "Cancel"
+        btnCancel.UseVisualStyleBackColor = True
+        btnCancel.Visible = False
+        ' 
+        ' lblSource
+        ' 
+        lblSource.AutoSize = True
+        lblSource.Location = New Point(12, 15)
+        lblSource.Name = "lblSource"
+        lblSource.Size = New Size(73, 15)
+        lblSource.TabIndex = 6
+        lblSource.Text = "Source Path:"
+        ' 
+        ' lblDest
+        ' 
+        lblDest.AutoSize = True
+        lblDest.Location = New Point(12, 85)
+        lblDest.Name = "lblDest"
+        lblDest.Size = New Size(106, 15)
+        lblDest.TabIndex = 7
+        lblDest.Text = "Destination Folder:"
+        ' 
+        ' Form1
+        ' 
+        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleMode = AutoScaleMode.Font
+        ClientSize = New Size(560, 200)
+        Controls.Add(lblDest)
+        Controls.Add(lblSource)
+        Controls.Add(btnStart)
+        Controls.Add(btnBrowseDestination)
+        Controls.Add(btnBrowseFileSource)
+        Controls.Add(btnBrowseFolderSource)
+        Controls.Add(txtDestination)
+        Controls.Add(txtSource)
+        Controls.Add(btnCancel)
+        FormBorderStyle = FormBorderStyle.FixedDialog
+        MaximizeBox = False
+        MinimizeBox = False
+        Name = "Form1"
+        StartPosition = FormStartPosition.CenterScreen
+        Text = "File Copy Launcher"
+        ResumeLayout(False)
+        PerformLayout()
 
     End Sub
 
     Friend WithEvents txtSource As TextBox
-    Friend WithEvents txtDest As TextBox
-    Friend WithEvents btnBrowseSource As Button
-    Friend WithEvents btnBrowseFile As Button
-    Friend WithEvents btnBrowseDest As Button
+    Friend WithEvents txtDestination As TextBox
+    Friend WithEvents btnBrowseFolderSource As Button
+    Friend WithEvents btnBrowseFileSource As Button
+    Friend WithEvents btnBrowseDestination As Button
     Friend WithEvents btnStart As Button
     Friend WithEvents btnCancel As Button
     Friend WithEvents lblSource As Label

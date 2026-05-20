@@ -223,7 +223,8 @@ Public Class Form1
     '  BROWSE BUTTONS
     '===============================
 
-    Private Sub btnBrowseSource_Click(sender As Object, e As EventArgs) Handles btnBrowseSource.Click
+    ' Lets the user pick a folder as the source.
+    Private Sub BtnBrowseFolderSource_Click(sender As Object, e As EventArgs) Handles btnBrowseFolderSource.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
                 txtSource.Text = f.SelectedPath
@@ -231,7 +232,8 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub btnBrowseFile_Click(sender As Object, e As EventArgs) Handles btnBrowseFile.Click
+    ' Lets the user pick a single file as the source.
+    Private Sub BtnBrowseFileSource_Click(sender As Object, e As EventArgs) Handles btnBrowseFileSource.Click
         Using f As New OpenFileDialog()
             f.Title = "Select a file to copy"
             f.Filter = "All Files (*.*)|*.*"
@@ -242,10 +244,11 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub btnBrowseDest_Click(sender As Object, e As EventArgs) Handles btnBrowseDest.Click
+    ' Lets the user pick the destination folder.
+    Private Sub BtnBrowseDestination_Click(sender As Object, e As EventArgs) Handles btnBrowseDestination.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
-                txtDest.Text = f.SelectedPath
+                txtDestination.Text = f.SelectedPath
             End If
         End Using
     End Sub
@@ -254,7 +257,7 @@ Public Class Form1
     '  START COPY (MAIN ENTRY POINT)
     '===============================
 
-    Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
 
         ' Prevent accidental double-start
         If isCopyRunning Then
@@ -266,7 +269,7 @@ Public Class Form1
         btnStart.Enabled = False
 
         Dim sourceDirectory As String = txtSource.Text
-        Dim destinationDirectory As String = txtDest.Text
+        Dim destinationDirectory As String = txtDestination.Text
 
         ' Centralized validation
         Dim validation = Validator.Validate(Me, sourceDirectory, destinationDirectory)
@@ -300,7 +303,7 @@ Public Class Form1
     '  CANCEL BUTTON
     '===============================
 
-    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
         btnCancel.Enabled = False   ' Prevent double-cancel
         engine?.Cancel()
     End Sub
