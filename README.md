@@ -5,7 +5,9 @@
 
 **Event‑Driven Non‑Blocking Copy Engine** is a small Windows Forms project that demonstrates how to build a responsive file/folder copy subsystem. It validates sources, blocks protected system paths, shows Explorer‑style overwrite and folder‑merge dialogs, and performs the copy work on a background thread while reporting progress via events.
 
-<img width="1280" height="640" alt="010" src="https://github.com/user-attachments/assets/2ec63830-eb2b-4d7d-9518-702e2eb12f18" />
+
+<img width="1280" height="640" alt="012" src="https://github.com/user-attachments/assets/6395a082-5935-4842-b8c1-1d50004421de" />
+
 
 ---
 
@@ -21,7 +23,6 @@
 - **Cancellation support** so long operations stop cooperatively.
 
 
-<img width="1280" height="640" alt="012" src="https://github.com/user-attachments/assets/6395a082-5935-4842-b8c1-1d50004421de" />
 
 ---
 
@@ -38,6 +39,7 @@
 - **Cancellation:** provide a `Cancel` method and check for cancellation inside the engine so long operations stop cooperatively.
 
 ---
+<img width="1280" height="640" alt="010" src="https://github.com/user-attachments/assets/2ec63830-eb2b-4d7d-9518-702e2eb12f18" />
 
 
 ### Before - blocking copy (what freezes the UI)
