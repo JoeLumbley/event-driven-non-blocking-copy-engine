@@ -25,6 +25,10 @@
 
 ---
 
+
+<img width="1920" height="746" alt="014" src="https://github.com/user-attachments/assets/b637f443-bcca-45c9-aa35-c6dbdc7c4bcb" />
+
+
 ### Key points 
 
 - **What blocks:** any long synchronous call on the UI thread (file I/O, heavy loops, network calls).  
