@@ -42,7 +42,8 @@ Public Class Form1
     '===============================
 
     ' Lets the user pick a folder as the source.
-    Private Sub BtnBrowseFolderSource_Click(sender As Object, e As EventArgs) Handles btnBrowseFolderSource.Click
+    Private Sub BtnBrowseFolderSource_Click(sender As Object, e As EventArgs) _
+        Handles btnBrowseFolderSource.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
                 txtSource.Text = f.SelectedPath
@@ -51,7 +52,8 @@ Public Class Form1
     End Sub
 
     ' Lets the user pick a single file as the source.
-    Private Sub BtnBrowseFileSource_Click(sender As Object, e As EventArgs) Handles btnBrowseFileSource.Click
+    Private Sub BtnBrowseFileSource_Click(sender As Object, e As EventArgs) _
+        Handles btnBrowseFileSource.Click
         Using f As New OpenFileDialog()
             f.Title = "Select a file to copy"
             f.Filter = "All Files (*.*)|*.*"
@@ -63,7 +65,8 @@ Public Class Form1
     End Sub
 
     ' Lets the user pick the destination folder.
-    Private Sub BtnBrowseDestination_Click(sender As Object, e As EventArgs) Handles btnBrowseDestination.Click
+    Private Sub BtnBrowseDestination_Click(sender As Object, e As EventArgs) _
+        Handles btnBrowseDestination.Click
         Using f As New FolderBrowserDialog()
             If f.ShowDialog(Me) = DialogResult.OK Then
                 txtDestination.Text = f.SelectedPath
@@ -75,7 +78,8 @@ Public Class Form1
     '  START COPY (MAIN ENTRY POINT)
     '===============================
 
-    Private Sub BtnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
+    Private Sub BtnStart_Click(sender As Object, e As EventArgs) _
+        Handles btnStart.Click
 
         ' Prevent accidental double-start
         If isCopyRunning Then
@@ -90,7 +94,9 @@ Public Class Form1
         Dim destinationDirectory As String = txtDestination.Text
 
         ' Centralized validation
-        Dim validation = Validator.Validate(Me, sourceDirectory, destinationDirectory)
+        Dim validation = Validator.Validate(Me,
+                                            sourceDirectory,
+                                            destinationDirectory)
         If Not validation.Success Then
             ResetUI()
             Return
@@ -121,7 +127,8 @@ Public Class Form1
     '  CANCEL BUTTON
     '===============================
 
-    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
+    Private Sub BtnCancel_Click(sender As Object, e As EventArgs) _
+        Handles btnCancel.Click
         btnCancel.Enabled = False   ' Prevent double-cancel
         engine?.Cancel()
     End Sub
@@ -130,24 +137,35 @@ Public Class Form1
     '  ENGINE COMPLETION HANDLER
     '===============================
 
-    Private Sub OnCompleted(success As Boolean, hadSkips As Boolean, hadErrors As Boolean)
+    Private Sub OnCompleted(success As Boolean,
+                            hadSkips As Boolean,
+                            hadErrors As Boolean)
 
-        ' Ensure we're on the UI thread before updating controls or showing message boxes.
+        ' Ensure we're on the UI thread before updating controls or showing
+        ' message boxes.
         If Me.InvokeRequired Then
-            ' We are on a background thread, so we need to marshal back to the UI thread.
+            ' We are on a background thread, so we need to marshal back to the
+            ' UI thread.
 
-            ' This ensures that the UI updates happen on the correct thread and that we don't run into cross-thread
-            ' operation exceptions.
+            ' This ensures that the UI updates happen on the correct thread and
+            ' that we don't run into cross-thread operation exceptions.
 
-            ' The lambda captures the success, hadSkips, and hadErrors parameters and passes them to the OnCompleted
-            ' method when invoked on the UI thread.
-            Me.Invoke(New Action(Of Boolean, Boolean, Boolean)(AddressOf OnCompleted), success, hadSkips, hadErrors)
+            ' The lambda captures the success, hadSkips, and hadErrors
+            ' parameters and passes them to the OnCompleted method when invoked
+            ' on the UI thread.
+            Me.Invoke(New Action(Of Boolean,
+                                    Boolean,
+                                    Boolean)(AddressOf OnCompleted), success,
+                                                                     hadSkips,
+                                                                     hadErrors)
 
-            Return ' Exit the current call since the UI thread will handle the rest
+            ' Exit the current call since the UI thread will handle the rest
+            Return
 
         End If
 
-        ' We are now on the UI thread, so we can safely update the UI controls without worrying about cross-thread exceptions.
+        ' We are now on the UI thread, so we can safely update the UI controls
+        ' without worrying about cross-thread exceptions.
 
         ' Unsubscribe for safety
         If engine IsNot Nothing Then
@@ -162,7 +180,10 @@ Public Class Form1
                             If(hadSkips, "Skipped items: Yes", "Skipped items: No") & vbCrLf &
                             If(hadErrors, "Errors occurred: Yes", "Errors occurred: No")
 
-        MessageBox.Show(msg, "Copy Summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageBox.Show(msg,
+                        "Copy Summary",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information)
 
     End Sub
 
